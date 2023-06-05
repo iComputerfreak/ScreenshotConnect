@@ -12,6 +12,10 @@ struct ScreenshotConnectApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(AppStoreConnectAPI())
+        }
+        Settings {
+            SettingsView()
         }
     }
 }
