@@ -28,6 +28,9 @@
 		ABFF570E2A2E0CFA0069C243 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF570D2A2E0CFA0069C243 /* Preferences.swift */; };
 		ABFF57122A2E0D340069C243 /* Preference.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF57112A2E0D340069C243 /* Preference.swift */; };
 		ABFF57142A2E0D620069C243 /* PublisherObservableObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF57132A2E0D620069C243 /* PublisherObservableObject.swift */; };
+		ABFF57162A2E11290069C243 /* ACStoreVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF57152A2E11290069C243 /* ACStoreVersion.swift */; };
+		ABFF57182A2E126B0069C243 /* ACPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF57172A2E126B0069C243 /* ACPlatform.swift */; };
+		ABFF571A2A2E12760069C243 /* ACAppStoreVersionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF57192A2E12760069C243 /* ACAppStoreVersionState.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +54,9 @@
 		ABFF570D2A2E0CFA0069C243 /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		ABFF57112A2E0D340069C243 /* Preference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preference.swift; sourceTree = "<group>"; };
 		ABFF57132A2E0D620069C243 /* PublisherObservableObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublisherObservableObject.swift; sourceTree = "<group>"; };
+		ABFF57152A2E11290069C243 /* ACStoreVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACStoreVersion.swift; sourceTree = "<group>"; };
+		ABFF57172A2E126B0069C243 /* ACPlatform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACPlatform.swift; sourceTree = "<group>"; };
+		ABFF57192A2E12760069C243 /* ACAppStoreVersionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACAppStoreVersionState.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,6 +125,9 @@
 				ABFF56F92A2A32920069C243 /* ResultWrapper.swift */,
 				ABFF56F72A2A11CA0069C243 /* ACApp.swift */,
 				ABFF57042A2B60580069C243 /* ACBuild.swift */,
+				ABFF57152A2E11290069C243 /* ACStoreVersion.swift */,
+				ABFF57172A2E126B0069C243 /* ACPlatform.swift */,
+				ABFF57192A2E12760069C243 /* ACAppStoreVersionState.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -223,12 +232,15 @@
 				ABFF56F22A2A0E5B0069C243 /* AppStoreConnectAPI.swift in Sources */,
 				ABCEF1372A293C5800295EB6 /* ScreenshotConnectApp.swift in Sources */,
 				ABFF570E2A2E0CFA0069C243 /* Preferences.swift in Sources */,
+				ABFF57182A2E126B0069C243 /* ACPlatform.swift in Sources */,
 				ABFF57122A2E0D340069C243 /* Preference.swift in Sources */,
 				ABFF57032A2B584C0069C243 /* JFLiterals.swift in Sources */,
+				ABFF57162A2E11290069C243 /* ACStoreVersion.swift in Sources */,
 				ABFF56F82A2A11CA0069C243 /* ACApp.swift in Sources */,
 				ABFF57052A2B60580069C243 /* ACBuild.swift in Sources */,
 				ABCEF1462A293E7400295EB6 /* ScreenshotUploader.swift in Sources */,
 				ABFF57072A2B76930069C243 /* ScreenshotClassifier.swift in Sources */,
+				ABFF571A2A2E12760069C243 /* ACAppStoreVersionState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

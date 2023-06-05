@@ -70,6 +70,13 @@ actor AppStoreConnectAPI: ObservableObject {
             .appIconURL
     }
     
+    func getAppVersions(for appID: String) async throws -> [String] {
+        return try await request(APIPath.appStoreVersions(appID: appID), method: .get, as: ResultWrapper<ACStoreVersion>.self)?
+            .data
+            .sorted(on: \.creationDate, by: >)
+            .map(\.version) ?? []
+    }
+    
     /// Executes an HTTP request to the App Store Connect API.
     ///
     ///     let result = try await request(.apps, method: .get, as: ResultWrapper<ACApp>.self)
@@ -144,6 +151,7 @@ extension AppStoreConnectAPI {
         static let apps = "/v1/apps"
         static let appScreenshotSets = "/v1/appScreenshotSets"
         static func appBuilds(appID: String) -> String { "/v1/apps/\(appID)/builds" }
+        static func appStoreVersions(appID: String) -> String { "/v1/apps/\(appID)/appStoreVersions" }
     }
     
     enum ContentType: String {

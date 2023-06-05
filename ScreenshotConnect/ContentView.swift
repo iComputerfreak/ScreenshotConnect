@@ -12,11 +12,13 @@ struct ContentView: View {
     @EnvironmentObject private var api: AppStoreConnectAPI
     
     @State private var apps: [ACApp] = []
+    @State private var appVersions: [String] = []
     
     @State private var showingScreenshotsImporter = false
     @State private var screenshotsURL: URL?
     
     @State private var selectedApp: ACApp? = nil
+    @State private var selectedAppVersion: String? = nil
     @State private var appIconURL: URL? = nil
     
     var body: some View {
@@ -64,9 +66,12 @@ struct ContentView: View {
                             .tag(app as ACApp?)
                     }
                 }
-                Picker("Select a version", selection: .constant("2.2.0")) {
-                    ForEach(["2.2.0", "2.3.0"], id: \.self) { version in
+                Picker("Select a version", selection: $selectedAppVersion) {
+                    Text("Select a version...")
+                        .tag(nil as String?)
+                    ForEach(appVersions, id: \.self) { version in
                         Text(version)
+                            .tag(version as String?)
                     }
                 }
                 if let app = selectedApp {
@@ -89,7 +94,7 @@ struct ContentView: View {
                     }
                 }
             }
-            .onChange(of: selectedApp, perform: loadAppIcon(for:))
+            .onChange(of: selectedApp, perform: selectedAppChanged(to:))
             Button("Reload") {
                 Task(priority: .userInitiated) {
                     if let apps = try? await api.getApps() {
@@ -107,19 +112,32 @@ struct ContentView: View {
         .padding()
     }
     
-    private func loadAppIcon(for newValue: ACApp?) {
+    private func selectedAppChanged(to newValue: ACApp?) {
         print("App changed to \(newValue?.name ?? "nil")")
         self.appIconURL = nil
+        self.appVersions = []
         guard let appID = newValue?.id else {
             print("Deselected an app")
             return
         }
+        // Use two tasks to perform the two calls concurrently
         Task(priority: .userInitiated) {
             do {
                 let url = try await api.getAppIcon(for: appID)
                 await MainActor.run {
                     print("Setting appIconURL to \(url?.absoluteString ?? "nil")")
                     self.appIconURL = url
+                }
+            } catch {
+                print(error)
+            }
+        }
+        Task(priority: .userInitiated) {
+            do {
+                let versions = try await api.getAppVersions(for: appID)
+                await MainActor.run {
+                    print("Setting appVersions to \(versions)")
+                    self.appVersions = versions
                 }
             } catch {
                 print(error)
