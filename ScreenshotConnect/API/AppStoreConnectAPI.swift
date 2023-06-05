@@ -70,6 +70,7 @@ actor AppStoreConnectAPI: ObservableObject {
             .appIconURL
     }
     
+    // TODO: Filter out versions for which we cannot upload screenshots anymore
     func getAppVersions(for appID: String) async throws -> [String] {
         return try await request(APIPath.appStoreVersions(appID: appID), method: .get, as: ResultWrapper<ACStoreVersion>.self)?
             .data

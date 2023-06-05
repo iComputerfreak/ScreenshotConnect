@@ -20,6 +20,25 @@ struct ContentView: View {
     @State private var selectedApp: ACApp? = nil
     @State private var selectedAppVersion: String? = nil
     @State private var appIconURL: URL? = nil
+    @State private var classificationResults: [Result<AppScreenshot, ScreenshotClassifier.Error>] = []
+    @State private var selectedDevices: [(device: Device, isSelected: Bool)] = []
+    
+    var screenshotsByDevice: [Device: [AppScreenshot]] {
+        // Only look at successes
+        let successfulScreenshots = classificationResults
+            .compactMap { result in
+                result.value
+            }
+        
+        return Dictionary(grouping: successfulScreenshots, by: \.device)
+    }
+    
+    var classificationErrors: [ScreenshotClassifier.Error] {
+        classificationResults
+            .compactMap { result in
+                result.error as? ScreenshotClassifier.Error
+            }
+    }
     
     var body: some View {
         Form {
@@ -46,19 +65,20 @@ struct ContentView: View {
             }
             Section("Detected Devices") {
                 List {
-                    ForEach(["iPhone 11 Pro", "iPad Pro (6th Generation)"], id: \.self) { device in
-                        Toggle(isOn: .constant(true)) {
+                    ForEach(Array(screenshotsByDevice.keys), id: \.name) { device in
+                        let screenshotCount = screenshotsByDevice[device]?.count ?? 0
+                        Toggle(sources: $selectedDevices, isOn: \.isSelected) {
                             HStack {
-                                Text(device)
+                                Text(device.name)
                                 Spacer()
-                                Text("\(Int.random(in: 0...10)) screenshots")
+                                Text("\(screenshotCount) screenshots")
                             }
                         }
                     }
                 }
             }
             Section("Select App") {
-                Picker("Select an app", selection: $selectedApp) {
+                Picker("Select an app", selection: $selectedApp.animation()) {
                     Text("Select an app...")
                         .tag(nil as ACApp?)
                     ForEach(apps.sorted(on: \.name, by: <), id: \.id) { app in
@@ -66,15 +86,15 @@ struct ContentView: View {
                             .tag(app as ACApp?)
                     }
                 }
-                Picker("Select a version", selection: $selectedAppVersion) {
-                    Text("Select a version...")
-                        .tag(nil as String?)
-                    ForEach(appVersions, id: \.self) { version in
-                        Text(version)
-                            .tag(version as String?)
-                    }
-                }
                 if let app = selectedApp {
+                    Picker("Select a version", selection: $selectedAppVersion) {
+                        Text("Select a version...")
+                            .tag(nil as String?)
+                        ForEach(appVersions, id: \.self) { version in
+                            Text(version)
+                                .tag(version as String?)
+                        }
+                    }
                     HStack {
                         AsyncImage(url: appIconURL) { image in
                             image
@@ -92,6 +112,7 @@ struct ContentView: View {
                             Text(app.bundleID)
                         }
                     }
+                    .animation(nil, value: selectedApp)
                 }
             }
             .onChange(of: selectedApp, perform: selectedAppChanged(to:))

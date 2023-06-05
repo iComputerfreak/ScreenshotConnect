@@ -8,7 +8,7 @@
 import Foundation
 
 // From: https://developer.apple.com/documentation/appstoreconnectapi/screenshotdisplaytype
-enum ScreenshotDisplayType: String, Codable {
+enum ScreenshotDisplayType: String, Codable, Hashable {
     case iPhone67 = "APP_IPHONE_67"
     case iPhone65 = "APP_IPHONE_65"
     case iPhone61 = "APP_IPHONE_61"

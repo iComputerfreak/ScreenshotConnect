@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct Device: Codable {
+public struct Device: Codable, Hashable {
     let name: String
     let screenshotDisplayType: ScreenshotDisplayType
 }

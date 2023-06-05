@@ -10,16 +10,14 @@ import SwiftUI
 
 struct AppScreenshot {
     let url: URL
-    let device: String // TODO: Custom enum
-    let locale: String
-    let fileSize: UInt64
+    let device: Device
+    let locale: String?
+    let fileSize: Int
     
-    init(url: URL, device: String, locale: String) throws {
+    init(url: URL, device: Device, locale: String?, fileSize: Int) {
         self.url = url
         self.device = device
         self.locale = locale
-        // Get file size
-        let attributes = try FileManager.default.attributesOfItem(atPath: url.path())
-        self.fileSize = attributes[.size] as! UInt64
+        self.fileSize = fileSize
     }
 }
