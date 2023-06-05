@@ -20,8 +20,19 @@ final class Preferences {
         self.userDefaults = userDefaults
     }
     
-    @UserDefault("should_show_hello_world")
-    var shouldShowHelloWorld: Bool = false
+    @UserDefault("issuerID")
+    var issuerID: String = ""
+    @UserDefault("privateKeyID")
+    var privateKeyID: String = ""
+    @UserDefault("privateKey")
+    var privateKey: Data = .init()
+    @UserDefault("devices")
+    var devices: [Device] = [
+        Device(name: "iPhone 8 Plus", screenshotDisplayType: .iPhone55),
+        Device(name: "iPhone 11 Pro", screenshotDisplayType: .iPhone65),
+        Device(name: "iPad Pro (12.9-inch) (2nd generation)", screenshotDisplayType: .iPadPro129),
+        Device(name: "iPad Pro (12.9-inch) (6th generation)", screenshotDisplayType: .iPadPro3Gen129),
+    ]
 }
 
 @propertyWrapper

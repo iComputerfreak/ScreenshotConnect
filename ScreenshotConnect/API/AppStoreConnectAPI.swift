@@ -13,15 +13,9 @@ import Combine
 actor AppStoreConnectAPI: ObservableObject {
     private static let jsonDecoder = JSONDecoder()
     
-    @AppStorage(JFLiterals.Keys.issuerID)
-    private var issuerID: String = ""
-    @AppStorage(JFLiterals.Keys.privateKeyID)
-    private var privateKeyID: String = ""
-    @AppStorage(JFLiterals.Keys.privateKey)
-    private var privateKey: Data = .init()
-    
-    var keyListener: AnyCancellable?
-    var privateKeyListener: AnyCancellable?
+    private var issuerID: String
+    private var privateKeyID: String
+    private var privateKey: Data
     
     private var signer: JWTSigner? {
         guard !privateKey.isEmpty else {
@@ -54,14 +48,11 @@ actor AppStoreConnectAPI: ObservableObject {
         }
     }
     
-    init(tokenValidity: TimeInterval = 15 * 60) {
+    init(issuerID: String, privateKeyID: String, privateKey: Data, tokenValidity: TimeInterval = 15 * 60) {
         self.tokenValidity = tokenValidity
-        self.keyListener = issuerID.publisher.merge(with: privateKeyID.publisher).sink { _ in
-            self.objectWillChange.send()
-        }
-        self.privateKeyListener = self.privateKey.publisher.sink { _ in
-            self.objectWillChange.send()
-        }
+        self.issuerID = issuerID
+        self.privateKeyID = privateKeyID
+        self.privateKey = privateKey
     }
     
     func getApps() async throws -> [ACApp] {

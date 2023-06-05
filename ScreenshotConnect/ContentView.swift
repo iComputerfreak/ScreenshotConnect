@@ -92,7 +92,6 @@ struct ContentView: View {
             .onChange(of: selectedApp, perform: loadAppIcon(for:))
             Button("Reload") {
                 Task(priority: .userInitiated) {
-                    let api = AppStoreConnectAPI()
                     if let apps = try? await api.getApps() {
                         await MainActor.run {
                             self.apps = apps

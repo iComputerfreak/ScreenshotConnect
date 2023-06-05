@@ -10,17 +10,12 @@ import SwiftUI
 import UniformTypeIdentifiers.UTType
 
 struct SettingsView: View {
-    @AppStorage(JFLiterals.Keys.issuerID) private var issuerID: String = ""
-    @AppStorage(JFLiterals.Keys.privateKeyID) private var privateKeyID: String = ""
+    @Preference(\.issuerID) private var issuerID
+    @Preference(\.privateKeyID) private var privateKeyID
     // TODO: Store encrypted
-    @AppStorage(JFLiterals.Keys.privateKey) private var privateKey: Data = .init()
+    @Preference(\.privateKey) private var privateKey
     
-    @AppStorage(JFLiterals.Keys.devices) private var devices: [Device] = [
-        Device(name: "iPhone 8 Plus", screenshotDisplayType: .iPhone55),
-        Device(name: "iPhone 11 Pro", screenshotDisplayType: .iPhone65),
-        Device(name: "iPad Pro (12.9-inch) (2nd generation)", screenshotDisplayType: .iPadPro129),
-        Device(name: "iPad Pro (12.9-inch) (6th generation)", screenshotDisplayType: .iPadPro3Gen129),
-    ]
+    @Preference(\.devices) private var devices
     
     @State private var showingPrivateKeyImporter = false
     @State private var showingPrivateKeyError = false
