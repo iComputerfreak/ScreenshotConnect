@@ -10,12 +10,10 @@ import JFUtils
 
 struct ContentView: View {
     @EnvironmentObject private var api: AppStoreConnectAPI
-    let classifier = ScreenshotClassifier()
     
     @State private var apps: [ACApp] = []
     @State private var appVersions: [String] = []
     
-    @State private var showingScreenshotsImporter = false
     @State private var screenshotsURL: URL?
     
     @State private var selectedApp: ACApp? = nil
@@ -24,15 +22,8 @@ struct ContentView: View {
     @State private var classificationResults: [Result<AppScreenshot, ScreenshotClassifier.Error>] = []
     @State private var selectedDevices: Set<Device> = []
     
-    var screenshotsByDevice: [Device: [AppScreenshot]] {
-        return Dictionary(grouping: screenshots, by: \.device)
-    }
-    
     var screenshots: [AppScreenshot] {
-        classificationResults
-            .compactMap { result in
-                result.value
-            }
+        classificationResults.compactMap(\.value)
     }
     
     var classificationErrors: [ScreenshotClassifier.Error] {
@@ -42,52 +33,10 @@ struct ContentView: View {
             }
     }
     
-    private func selectedDevicesProxy(for device: Device) -> Binding<Bool> {
-        Binding {
-            selectedDevices.contains(device)
-        } set: { newValue in
-            if newValue == true, !selectedDevices.contains(device) {
-                selectedDevices.insert(device)
-            } else {
-                selectedDevices.remove(device)
-            }
-        }
-
-    }
-    
     var body: some View {
         Form {
             Section("Select Screenshots") {
-                HStack {
-                    Button("Select Screenshots Folder") {
-                        self.showingScreenshotsImporter = true
-                    }
-                    Text(screenshotsURL?.path() ?? "No directory selected")
-                }
-                .fileImporter(isPresented: $showingScreenshotsImporter, allowedContentTypes: [.directory]) { result in
-                    do {
-                        let url = try result.get()
-                        DispatchQueue.main.async {
-                            self.screenshotsURL = url
-                        }
-                        // MARK: Scan directory for screenshots
-                        do {
-                            let results = try classifier.classifyScreenshots(in: url)
-                            print("Classification results:")
-                            print(results)
-                            DispatchQueue.main.async {
-                                self.classificationResults = results
-                                self.selectedDevices = Set(screenshotsByDevice.keys)
-                            }
-                        } catch {
-                            print(error)
-                        }
-                    } catch let error as ScreenshotClassifier.Error {
-                        print("Error classifying screenshots: \(error)")
-                    } catch {
-                        print("Error opening screenshots directory: \(error)")
-                    }
-                }
+                SelectScreenshotsButton(screenshotsURL: $screenshotsURL, classificationResults: $classificationResults, selectedDevices: $selectedDevices)
                 if !screenshots.isEmpty {
                     Text("Found \(screenshots.count) screenshots for \(Set(screenshots.compactMap(\.locale)).count) locales.")
                 }
@@ -97,37 +46,12 @@ struct ContentView: View {
                 }
             }
             Section("Detected Devices") {
-                List {
-                    ForEach(Array(screenshotsByDevice.keys.sorted(on: \.name, by: <)), id: \.name) { device in
-                        let screenshotCount = screenshotsByDevice[device]?.count ?? 0
-                        Toggle(isOn: selectedDevicesProxy(for: device)) {
-                            HStack {
-                                Text(device.name)
-                                Spacer()
-                                Text("\(screenshotCount) screenshots")
-                            }
-                        }
-                    }
-                }
+                SelectDevicesList(classificationResults: $classificationResults, selectedDevices: $selectedDevices)
             }
             Section("Select App") {
-                Picker("Select an app", selection: $selectedApp.animation()) {
-                    Text("Select an app...")
-                        .tag(nil as ACApp?)
-                    ForEach(apps.sorted(on: \.name, by: <), id: \.id) { app in
-                        Text(app.name)
-                            .tag(app as ACApp?)
-                    }
-                }
+                SelectAppPicker(apps: $apps, selectedApp: $selectedApp)
                 if let app = selectedApp {
-                    Picker("Select a version", selection: $selectedAppVersion) {
-                        Text("Select a version...")
-                            .tag(nil as String?)
-                        ForEach(appVersions, id: \.self) { version in
-                            Text(version)
-                                .tag(version as String?)
-                        }
-                    }
+                    SelectVersionPicker(versions: $appVersions, selectedVersion: $selectedAppVersion)
                     HStack {
                         AsyncImage(url: appIconURL) { image in
                             image
@@ -148,7 +72,7 @@ struct ContentView: View {
                     .animation(nil, value: selectedApp)
                 }
             }
-            .onChange(of: selectedApp, perform: selectedAppChanged(to:))
+            .onChange(of: selectedApp, selectedAppChanged)
             Button("Reload") {
                 Task(priority: .userInitiated) {
                     if let apps = try? await api.getApps() {
@@ -166,11 +90,11 @@ struct ContentView: View {
         .padding()
     }
     
-    private func selectedAppChanged(to newValue: ACApp?) {
-        print("App changed to \(newValue?.name ?? "nil")")
+    private func selectedAppChanged() {
+        print("App changed to \(selectedApp?.name ?? "nil")")
         self.appIconURL = nil
         self.appVersions = []
-        guard let appID = newValue?.id else {
+        guard let appID = selectedApp?.id else {
             print("Deselected an app")
             return
         }

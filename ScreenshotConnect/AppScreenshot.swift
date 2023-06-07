@@ -21,3 +21,12 @@ struct AppScreenshot {
         self.fileSize = fileSize
     }
 }
+
+extension AppScreenshot {
+    static let preview = AppScreenshot(
+        url: URL(string: "file:///Users/john/Desktop/Screenshot.png")!,
+        device: .preview,
+        locale: "en_US",
+        fileSize: 4895
+    )
+}

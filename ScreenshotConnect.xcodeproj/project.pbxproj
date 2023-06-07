@@ -13,6 +13,10 @@
 		ABCEF13E2A293C5900295EB6 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ABCEF13D2A293C5900295EB6 /* Preview Assets.xcassets */; };
 		ABCEF1462A293E7400295EB6 /* ScreenshotUploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABCEF1452A293E7400295EB6 /* ScreenshotUploader.swift */; };
 		ABCEF1492A29416100295EB6 /* AppStoreConnect-Swift-SDK in Frameworks */ = {isa = PBXBuildFile; productRef = ABCEF1482A29416100295EB6 /* AppStoreConnect-Swift-SDK */; };
+		ABD1BE9A2A30B64000381AE8 /* SelectScreenshotsButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BE992A30B64000381AE8 /* SelectScreenshotsButton.swift */; };
+		ABD1BE9C2A30B68A00381AE8 /* SelectDevicesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BE9B2A30B68A00381AE8 /* SelectDevicesList.swift */; };
+		ABD1BE9E2A30B70900381AE8 /* SelectAppPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BE9D2A30B70900381AE8 /* SelectAppPicker.swift */; };
+		ABD1BEA02A30B75D00381AE8 /* SelectVersionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BE9F2A30B75D00381AE8 /* SelectVersionPicker.swift */; };
 		ABFF56F22A2A0E5B0069C243 /* AppStoreConnectAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF56F12A2A0E5B0069C243 /* AppStoreConnectAPI.swift */; };
 		ABFF56F52A2A0F7A0069C243 /* SwiftJWT in Frameworks */ = {isa = PBXBuildFile; productRef = ABFF56F42A2A0F7A0069C243 /* SwiftJWT */; };
 		ABFF56F82A2A11CA0069C243 /* ACApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF56F72A2A11CA0069C243 /* ACApp.swift */; };
@@ -41,6 +45,10 @@
 		ABCEF13D2A293C5900295EB6 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		ABCEF13F2A293C5900295EB6 /* ScreenshotConnect.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = ScreenshotConnect.entitlements; sourceTree = "<group>"; };
 		ABCEF1452A293E7400295EB6 /* ScreenshotUploader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotUploader.swift; sourceTree = "<group>"; };
+		ABD1BE992A30B64000381AE8 /* SelectScreenshotsButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectScreenshotsButton.swift; sourceTree = "<group>"; };
+		ABD1BE9B2A30B68A00381AE8 /* SelectDevicesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectDevicesList.swift; sourceTree = "<group>"; };
+		ABD1BE9D2A30B70900381AE8 /* SelectAppPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectAppPicker.swift; sourceTree = "<group>"; };
+		ABD1BE9F2A30B75D00381AE8 /* SelectVersionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVersionPicker.swift; sourceTree = "<group>"; };
 		ABFF56F12A2A0E5B0069C243 /* AppStoreConnectAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreConnectAPI.swift; sourceTree = "<group>"; };
 		ABFF56F72A2A11CA0069C243 /* ACApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACApp.swift; sourceTree = "<group>"; };
 		ABFF56F92A2A32920069C243 /* ResultWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultWrapper.swift; sourceTree = "<group>"; };
@@ -93,7 +101,7 @@
 			isa = PBXGroup;
 			children = (
 				ABCEF1362A293C5800295EB6 /* ScreenshotConnectApp.swift */,
-				ABCEF1382A293C5800295EB6 /* ContentView.swift */,
+				ABD1BE982A30B4E800381AE8 /* ContentView */,
 				ABFF57002A2A5AD40069C243 /* SettingsView.swift */,
 				ABCEF1452A293E7400295EB6 /* ScreenshotUploader.swift */,
 				ABFF56FE2A2A590F0069C243 /* AppScreenshot.swift */,
@@ -116,6 +124,18 @@
 				ABCEF13D2A293C5900295EB6 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		ABD1BE982A30B4E800381AE8 /* ContentView */ = {
+			isa = PBXGroup;
+			children = (
+				ABCEF1382A293C5800295EB6 /* ContentView.swift */,
+				ABD1BE992A30B64000381AE8 /* SelectScreenshotsButton.swift */,
+				ABD1BE9B2A30B68A00381AE8 /* SelectDevicesList.swift */,
+				ABD1BE9D2A30B70900381AE8 /* SelectAppPicker.swift */,
+				ABD1BE9F2A30B75D00381AE8 /* SelectVersionPicker.swift */,
+			);
+			path = ContentView;
 			sourceTree = "<group>";
 		};
 		ABFF56F62A2A11BC0069C243 /* API */ = {
@@ -175,7 +195,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1430;
-				LastUpgradeCheck = 1430;
+				LastUpgradeCheck = 1500;
 				TargetAttributes = {
 					ABCEF1322A293C5800295EB6 = {
 						CreatedOnToolsVersion = 14.3;
@@ -232,11 +252,15 @@
 				ABFF56F22A2A0E5B0069C243 /* AppStoreConnectAPI.swift in Sources */,
 				ABCEF1372A293C5800295EB6 /* ScreenshotConnectApp.swift in Sources */,
 				ABFF570E2A2E0CFA0069C243 /* Preferences.swift in Sources */,
+				ABD1BEA02A30B75D00381AE8 /* SelectVersionPicker.swift in Sources */,
 				ABFF57182A2E126B0069C243 /* ACPlatform.swift in Sources */,
 				ABFF57122A2E0D340069C243 /* Preference.swift in Sources */,
 				ABFF57032A2B584C0069C243 /* JFLiterals.swift in Sources */,
+				ABD1BE9A2A30B64000381AE8 /* SelectScreenshotsButton.swift in Sources */,
+				ABD1BE9C2A30B68A00381AE8 /* SelectDevicesList.swift in Sources */,
 				ABFF57162A2E11290069C243 /* ACStoreVersion.swift in Sources */,
 				ABFF56F82A2A11CA0069C243 /* ACApp.swift in Sources */,
+				ABD1BE9E2A30B70900381AE8 /* SelectAppPicker.swift in Sources */,
 				ABFF57052A2B60580069C243 /* ACBuild.swift in Sources */,
 				ABCEF1462A293E7400295EB6 /* ScreenshotUploader.swift in Sources */,
 				ABFF57072A2B76930069C243 /* ScreenshotClassifier.swift in Sources */,
@@ -251,6 +275,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -280,6 +305,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -297,7 +323,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -311,6 +337,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -340,6 +367,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -351,7 +379,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MACOSX_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -369,6 +397,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"ScreenshotConnect/Preview Content\"";
 				DEVELOPMENT_TEAM = 46C9Y785NA;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -396,6 +425,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"ScreenshotConnect/Preview Content\"";
 				DEVELOPMENT_TEAM = 46C9Y785NA;
 				ENABLE_HARDENED_RUNTIME = YES;

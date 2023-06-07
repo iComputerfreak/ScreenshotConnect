@@ -33,3 +33,7 @@ extension [Device]: RawRepresentable {
         self = result
     }
 }
+
+extension Device {
+    static let preview = Device(name: "iPhone 11 Pro", screenshotDisplayType: .iPhone65)
+}

@@ -14,6 +14,14 @@ struct ACApp: Decodable, Equatable, Hashable {
     let sku: String
     let primaryLocale: String
     
+    init(id: String, name: String, bundleID: String, sku: String, primaryLocale: String) {
+        self.id = id
+        self.name = name
+        self.bundleID = bundleID
+        self.sku = sku
+        self.primaryLocale = primaryLocale
+    }
+    
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(String.self, forKey: .id)
@@ -36,4 +44,14 @@ struct ACApp: Decodable, Equatable, Hashable {
         case sku
         case primaryLocale
     }
+}
+
+extension ACApp {
+    static let preview = ACApp(
+        id: "6449793212",
+        name: "Movie DB",
+        bundleID: "de.JonasFrey.Movie-DB",
+        sku: "de.JonasFrey.Movie-DB",
+        primaryLocale: "de_DE"
+    )
 }
