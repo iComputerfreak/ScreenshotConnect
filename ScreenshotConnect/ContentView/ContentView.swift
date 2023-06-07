@@ -12,15 +12,12 @@ struct ContentView: View {
     @EnvironmentObject private var api: AppStoreConnectAPI
     
     @State private var apps: [ACApp] = []
-    @State private var appVersions: [String] = []
-    
     @State private var screenshotsURL: URL?
-    
     @State private var selectedApp: ACApp? = nil
     @State private var selectedAppVersion: String? = nil
-    @State private var appIconURL: URL? = nil
     @State private var classificationResults: [Result<AppScreenshot, ScreenshotClassifier.Error>] = []
     @State private var selectedDevices: Set<Device> = []
+    @State private var uploadedScreenshots: Int = 0
     
     var screenshots: [AppScreenshot] {
         classificationResults.compactMap(\.value)
@@ -31,6 +28,12 @@ struct ContentView: View {
             .compactMap { result in
                 result.error as? ScreenshotClassifier.Error
             }
+    }
+    
+    var screenshotsToUpload: [AppScreenshot] {
+        screenshots.filter { screenshot in
+            selectedDevices.contains(screenshot.device)
+        }
     }
     
     var body: some View {
@@ -50,36 +53,22 @@ struct ContentView: View {
             }
             Section("Select App") {
                 SelectAppPicker(apps: $apps, selectedApp: $selectedApp)
-                if let app = selectedApp {
-                    SelectVersionPicker(versions: $appVersions, selectedVersion: $selectedAppVersion)
-                    HStack {
-                        AsyncImage(url: appIconURL) { image in
-                            image
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .cornerRadius(10)
-                        } placeholder: {
-                            ProgressView()
-                                .padding()
-                        }
-                        .frame(width: 50, height: 50)
-                        VStack(alignment: .leading) {
-                            Text(app.name)
-                                .font(.title)
-                            Text(app.bundleID)
-                        }
-                    }
-                    .animation(nil, value: selectedApp)
+                if selectedApp != nil {
+                    SelectVersionPicker(selectedApp: $selectedApp, selectedVersion: $selectedAppVersion)
+                    AppInfoView(app: $selectedApp)
+                        .animation(nil, value: selectedApp)
                 }
             }
-            .onChange(of: selectedApp, selectedAppChanged)
-            Button("Reload") {
-                Task(priority: .userInitiated) {
-                    if let apps = try? await api.getApps() {
-                        await MainActor.run {
-                            self.apps = apps
-                        }
-                    }
+            VStack {
+                HStack {
+                    Spacer()
+                    UploadButton()
+                    Spacer()
+                }
+                ProgressView(value: Double(uploadedScreenshots), total: Double(screenshotsToUpload.count)) {
+                    Text("Uploading screenshots...")
+                } currentValueLabel: {
+                    Text("\(uploadedScreenshots) / \(screenshotsToUpload.count)")
                 }
             }
         }
@@ -89,43 +78,11 @@ struct ContentView: View {
         }
         .padding()
     }
-    
-    private func selectedAppChanged() {
-        print("App changed to \(selectedApp?.name ?? "nil")")
-        self.appIconURL = nil
-        self.appVersions = []
-        guard let appID = selectedApp?.id else {
-            print("Deselected an app")
-            return
-        }
-        // Use two tasks to perform the two calls concurrently
-        Task(priority: .userInitiated) {
-            do {
-                let url = try await api.getAppIcon(for: appID)
-                await MainActor.run {
-                    print("Setting appIconURL to \(url?.absoluteString ?? "nil")")
-                    self.appIconURL = url
-                }
-            } catch {
-                print(error)
-            }
-        }
-        Task(priority: .userInitiated) {
-            do {
-                let versions = try await api.getAppVersions(for: appID)
-                await MainActor.run {
-                    print("Setting appVersions to \(versions)")
-                    self.appVersions = versions
-                }
-            } catch {
-                print(error)
-            }
-        }
-    }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .frame(height: 500)
     }
 }

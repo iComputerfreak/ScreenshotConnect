@@ -23,6 +23,6 @@ struct SelectAppPicker: View {
     }
 }
 
-#Preview {
-    SelectAppPicker(apps: .constant([ACApp.preview]), selectedApp: .constant(nil))
-}
+//#Preview {
+//    SelectAppPicker(apps: .constant([ACApp.preview]), selectedApp: .constant(nil))
+//}

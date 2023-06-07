@@ -17,6 +17,11 @@
 		ABD1BE9C2A30B68A00381AE8 /* SelectDevicesList.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BE9B2A30B68A00381AE8 /* SelectDevicesList.swift */; };
 		ABD1BE9E2A30B70900381AE8 /* SelectAppPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BE9D2A30B70900381AE8 /* SelectAppPicker.swift */; };
 		ABD1BEA02A30B75D00381AE8 /* SelectVersionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BE9F2A30B75D00381AE8 /* SelectVersionPicker.swift */; };
+		ABD1BEA22A30BB3400381AE8 /* AppInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BEA12A30BB3400381AE8 /* AppInfoView.swift */; };
+		ABD1BEA42A30BEAC00381AE8 /* UploadButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BEA32A30BEAC00381AE8 /* UploadButton.swift */; };
+		ABD1BEA62A31186D00381AE8 /* ACLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BEA52A31186D00381AE8 /* ACLocalization.swift */; };
+		ABD1BEA82A311D2800381AE8 /* ACAppScreenshotSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BEA72A311D2800381AE8 /* ACAppScreenshotSet.swift */; };
+		ABD1BEAA2A311E8200381AE8 /* CreateAppScreenshotSetPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BEA92A311E8200381AE8 /* CreateAppScreenshotSetPayload.swift */; };
 		ABFF56F22A2A0E5B0069C243 /* AppStoreConnectAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF56F12A2A0E5B0069C243 /* AppStoreConnectAPI.swift */; };
 		ABFF56F52A2A0F7A0069C243 /* SwiftJWT in Frameworks */ = {isa = PBXBuildFile; productRef = ABFF56F42A2A0F7A0069C243 /* SwiftJWT */; };
 		ABFF56F82A2A11CA0069C243 /* ACApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF56F72A2A11CA0069C243 /* ACApp.swift */; };
@@ -49,6 +54,11 @@
 		ABD1BE9B2A30B68A00381AE8 /* SelectDevicesList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectDevicesList.swift; sourceTree = "<group>"; };
 		ABD1BE9D2A30B70900381AE8 /* SelectAppPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectAppPicker.swift; sourceTree = "<group>"; };
 		ABD1BE9F2A30B75D00381AE8 /* SelectVersionPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectVersionPicker.swift; sourceTree = "<group>"; };
+		ABD1BEA12A30BB3400381AE8 /* AppInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfoView.swift; sourceTree = "<group>"; };
+		ABD1BEA32A30BEAC00381AE8 /* UploadButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadButton.swift; sourceTree = "<group>"; };
+		ABD1BEA52A31186D00381AE8 /* ACLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACLocalization.swift; sourceTree = "<group>"; };
+		ABD1BEA72A311D2800381AE8 /* ACAppScreenshotSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACAppScreenshotSet.swift; sourceTree = "<group>"; };
+		ABD1BEA92A311E8200381AE8 /* CreateAppScreenshotSetPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAppScreenshotSetPayload.swift; sourceTree = "<group>"; };
 		ABFF56F12A2A0E5B0069C243 /* AppStoreConnectAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreConnectAPI.swift; sourceTree = "<group>"; };
 		ABFF56F72A2A11CA0069C243 /* ACApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACApp.swift; sourceTree = "<group>"; };
 		ABFF56F92A2A32920069C243 /* ResultWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultWrapper.swift; sourceTree = "<group>"; };
@@ -134,6 +144,8 @@
 				ABD1BE9B2A30B68A00381AE8 /* SelectDevicesList.swift */,
 				ABD1BE9D2A30B70900381AE8 /* SelectAppPicker.swift */,
 				ABD1BE9F2A30B75D00381AE8 /* SelectVersionPicker.swift */,
+				ABD1BEA12A30BB3400381AE8 /* AppInfoView.swift */,
+				ABD1BEA32A30BEAC00381AE8 /* UploadButton.swift */,
 			);
 			path = ContentView;
 			sourceTree = "<group>";
@@ -148,6 +160,9 @@
 				ABFF57152A2E11290069C243 /* ACStoreVersion.swift */,
 				ABFF57172A2E126B0069C243 /* ACPlatform.swift */,
 				ABFF57192A2E12760069C243 /* ACAppStoreVersionState.swift */,
+				ABD1BEA52A31186D00381AE8 /* ACLocalization.swift */,
+				ABD1BEA72A311D2800381AE8 /* ACAppScreenshotSet.swift */,
+				ABD1BEA92A311E8200381AE8 /* CreateAppScreenshotSetPayload.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -251,18 +266,23 @@
 				ABFF56FF2A2A590F0069C243 /* AppScreenshot.swift in Sources */,
 				ABFF56F22A2A0E5B0069C243 /* AppStoreConnectAPI.swift in Sources */,
 				ABCEF1372A293C5800295EB6 /* ScreenshotConnectApp.swift in Sources */,
+				ABD1BEAA2A311E8200381AE8 /* CreateAppScreenshotSetPayload.swift in Sources */,
 				ABFF570E2A2E0CFA0069C243 /* Preferences.swift in Sources */,
 				ABD1BEA02A30B75D00381AE8 /* SelectVersionPicker.swift in Sources */,
 				ABFF57182A2E126B0069C243 /* ACPlatform.swift in Sources */,
+				ABD1BEA22A30BB3400381AE8 /* AppInfoView.swift in Sources */,
 				ABFF57122A2E0D340069C243 /* Preference.swift in Sources */,
 				ABFF57032A2B584C0069C243 /* JFLiterals.swift in Sources */,
 				ABD1BE9A2A30B64000381AE8 /* SelectScreenshotsButton.swift in Sources */,
 				ABD1BE9C2A30B68A00381AE8 /* SelectDevicesList.swift in Sources */,
 				ABFF57162A2E11290069C243 /* ACStoreVersion.swift in Sources */,
+				ABD1BEA62A31186D00381AE8 /* ACLocalization.swift in Sources */,
 				ABFF56F82A2A11CA0069C243 /* ACApp.swift in Sources */,
 				ABD1BE9E2A30B70900381AE8 /* SelectAppPicker.swift in Sources */,
 				ABFF57052A2B60580069C243 /* ACBuild.swift in Sources */,
 				ABCEF1462A293E7400295EB6 /* ScreenshotUploader.swift in Sources */,
+				ABD1BEA42A30BEAC00381AE8 /* UploadButton.swift in Sources */,
+				ABD1BEA82A311D2800381AE8 /* ACAppScreenshotSet.swift in Sources */,
 				ABFF57072A2B76930069C243 /* ScreenshotClassifier.swift in Sources */,
 				ABFF571A2A2E12760069C243 /* ACAppStoreVersionState.swift in Sources */,
 			);
@@ -323,7 +343,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -379,7 +399,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				MACOSX_DEPLOYMENT_TARGET = 14.0;
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
@@ -408,6 +428,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = de.JonasFrey.ScreenshotConnect;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -436,6 +457,7 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 13.4;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = de.JonasFrey.ScreenshotConnect;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct SelectVersionPicker: View {
-    @Binding var versions: [String]
+    @EnvironmentObject private var api: AppStoreConnectAPI
+    @Binding var selectedApp: ACApp?
+    @State private var versions: [String] = []
     @Binding var selectedVersion: String?
     
     var body: some View {
@@ -21,8 +23,28 @@ struct SelectVersionPicker: View {
             }
         }
     }
+    
+    func loadVersions() {
+        print("App changed to \(selectedApp?.name ?? "nil")")
+        self.versions = []
+        guard let appID = selectedApp?.id else {
+            print("Deselected an app")
+            return
+        }
+        Task(priority: .userInitiated) {
+            do {
+                let versions = try await api.getAppVersions(for: appID)
+                await MainActor.run {
+                    print("Setting appVersions to \(versions)")
+                    self.versions = versions
+                }
+            } catch {
+                print(error)
+            }
+        }
+    }
 }
 
-#Preview {
-    SelectVersionPicker(versions: .constant(["1.2.0", "1.1.0", "1.0.0"]), selectedVersion: .constant("1.2.0"))
-}
+//#Preview {
+//    SelectVersionPicker(selectedApp: .constant(.preview), selectedVersion: .constant("1.2.0"))
+//}

@@ -7,6 +7,9 @@
 
 import Foundation
 
-struct ResultWrapper<Content>: Decodable where Content: Decodable {
+struct ResultWrapper<Content> {
     let data: [Content]
 }
+
+extension ResultWrapper: Decodable where Content: Decodable {}
+extension ResultWrapper: Encodable where Content: Encodable {}

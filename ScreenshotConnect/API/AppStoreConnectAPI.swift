@@ -12,6 +12,7 @@ import Combine
 
 actor AppStoreConnectAPI: ObservableObject {
     private static let jsonDecoder = JSONDecoder()
+    private static let jsonEncoder = JSONEncoder()
     
     private var issuerID: String
     private var privateKeyID: String
@@ -64,7 +65,7 @@ actor AppStoreConnectAPI: ObservableObject {
     }
     
     func getAppIcon(for appID: String) async throws -> URL? {
-        return try await request(APIPath.appBuilds(appID: appID), method: .get, as: ResultWrapper<ACBuild>.self)?
+        try await request(APIPath.appBuilds(appID: appID), method: .get, as: ResultWrapper<ACBuild>.self)?
             .data
             .max(on: \.version, by: <)?
             .appIconURL
@@ -72,10 +73,41 @@ actor AppStoreConnectAPI: ObservableObject {
     
     // TODO: Filter out versions for which we cannot upload screenshots anymore
     func getAppVersions(for appID: String) async throws -> [String] {
-        return try await request(APIPath.appStoreVersions(appID: appID), method: .get, as: ResultWrapper<ACStoreVersion>.self)?
+        try await request(APIPath.appStoreVersions(appID: appID), method: .get, as: ResultWrapper<ACStoreVersion>.self)?
             .data
             .sorted(on: \.creationDate, by: >)
             .map(\.version) ?? []
+    }
+    
+    func getLocalizations(for appStoreVersionID: String) async throws -> [ACLocalization] {
+        try await request(APIPath.appStoreVersionLocalizations(appStoreVersionID: appStoreVersionID), method: .get, as: ResultWrapper<ACLocalization>.self)?
+            .data ?? []
+    }
+    
+    func getScreenshotSets(for localization: ACLocalization) async throws -> [ACAppScreenshotSet] {
+        try await request(
+            APIPath.appScreenshotSets(for: localization.id),
+            method: .get,
+            as: ResultWrapper<ACAppScreenshotSet>.self
+        )?
+        .data ?? []
+    }
+    
+    func createScreenshotSet(
+        for localization: ACLocalization,
+        screenshotDisplayType: ScreenshotDisplayType
+    ) async throws {
+        let payload = CreateAppScreenshotSetPayload(
+            screenshotDisplayType: screenshotDisplayType,
+            localization: localization
+        )
+        _ = try await request(
+            APIPath.appScreenshotSets,
+            method: .post,
+            as: Data.self,
+            body: Self.jsonEncoder.encode(payload),
+            contentType: .json
+        )
     }
     
     /// Executes an HTTP request to the App Store Connect API.
@@ -151,8 +183,14 @@ extension AppStoreConnectAPI {
     enum APIPath {
         static let apps = "/v1/apps"
         static let appScreenshotSets = "/v1/appScreenshotSets"
+        static func appScreenshotSets(for localizationID: String) -> String {
+            "/v1/appStoreVersionLocalizations/\(localizationID)/appScreenshotSets"
+        }
         static func appBuilds(appID: String) -> String { "/v1/apps/\(appID)/builds" }
         static func appStoreVersions(appID: String) -> String { "/v1/apps/\(appID)/appStoreVersions" }
+        static func appStoreVersionLocalizations(appStoreVersionID: String) -> String {
+            "/v1/appStoreVersions/\(appStoreVersionID)/appStoreVersionLocalizations"
+        }
     }
     
     enum ContentType: String {

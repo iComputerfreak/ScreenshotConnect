@@ -43,6 +43,6 @@ struct SelectDevicesList: View {
     }
 }
 
-#Preview {
-    SelectDevicesList(classificationResults: .constant([]), selectedDevices: .constant([]))
-}
+//#Preview {
+//    SelectDevicesList(classificationResults: .constant([]), selectedDevices: .constant([]))
+//}

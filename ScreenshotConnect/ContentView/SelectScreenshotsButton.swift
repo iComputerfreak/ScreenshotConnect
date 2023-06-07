@@ -50,6 +50,6 @@ struct SelectScreenshotsButton: View {
     }
 }
 
-#Preview {
-    SelectScreenshotsButton(screenshotsURL: .constant(nil), classificationResults: .constant([]), selectedDevices: .constant([]))
-}
+//#Preview {
+//    SelectScreenshotsButton(screenshotsURL: .constant(nil), classificationResults: .constant([]), selectedDevices: .constant([]))
+//}
