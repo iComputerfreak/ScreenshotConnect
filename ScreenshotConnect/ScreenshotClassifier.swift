@@ -70,7 +70,7 @@ struct ScreenshotClassifier {
                     // We sort by name length to first check longer names (e.g. 'iPad Pro' before 'iPad')
                     .sorted(on: \.name.count, by: >)
                     .first(where: { device in
-                        url.path().contains(device.name)
+                        url.path(percentEncoded: false).contains(device.name)
                     })
             else {
                 screenshots.append(.failure(Error.unknownDevice(url)))
@@ -80,9 +80,10 @@ struct ScreenshotClassifier {
             // MARK: Locale
             // For the locale, we only look at the parent directory of the file itself
             var locale: String? = nil
+            let regex = /[a-z]+(_|-)[a-z]+/
             if
-                let parent = url.pathComponents.dropLast().last,
-                parent.lowercased().wholeMatch(of: /[a-z]+_[a-z]+/) != nil
+                let parent = url.pathComponents.dropLast().last?.removingPercentEncoding,
+                parent.lowercased().wholeMatch(of: regex) != nil
             {
                 locale = parent
             }

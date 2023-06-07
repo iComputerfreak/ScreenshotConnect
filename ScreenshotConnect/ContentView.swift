@@ -10,6 +10,7 @@ import JFUtils
 
 struct ContentView: View {
     @EnvironmentObject private var api: AppStoreConnectAPI
+    let classifier = ScreenshotClassifier()
     
     @State private var apps: [ACApp] = []
     @State private var appVersions: [String] = []
@@ -21,16 +22,17 @@ struct ContentView: View {
     @State private var selectedAppVersion: String? = nil
     @State private var appIconURL: URL? = nil
     @State private var classificationResults: [Result<AppScreenshot, ScreenshotClassifier.Error>] = []
-    @State private var selectedDevices: [(device: Device, isSelected: Bool)] = []
+    @State private var selectedDevices: Set<Device> = []
     
     var screenshotsByDevice: [Device: [AppScreenshot]] {
-        // Only look at successes
-        let successfulScreenshots = classificationResults
+        return Dictionary(grouping: screenshots, by: \.device)
+    }
+    
+    var screenshots: [AppScreenshot] {
+        classificationResults
             .compactMap { result in
                 result.value
             }
-        
-        return Dictionary(grouping: successfulScreenshots, by: \.device)
     }
     
     var classificationErrors: [ScreenshotClassifier.Error] {
@@ -38,6 +40,19 @@ struct ContentView: View {
             .compactMap { result in
                 result.error as? ScreenshotClassifier.Error
             }
+    }
+    
+    private func selectedDevicesProxy(for device: Device) -> Binding<Bool> {
+        Binding {
+            selectedDevices.contains(device)
+        } set: { newValue in
+            if newValue == true, !selectedDevices.contains(device) {
+                selectedDevices.insert(device)
+            } else {
+                selectedDevices.remove(device)
+            }
+        }
+
     }
     
     var body: some View {
@@ -50,24 +65,42 @@ struct ContentView: View {
                     Text(screenshotsURL?.path() ?? "No directory selected")
                 }
                 .fileImporter(isPresented: $showingScreenshotsImporter, allowedContentTypes: [.directory]) { result in
-                    if let url = result.value {
+                    do {
+                        let url = try result.get()
                         DispatchQueue.main.async {
                             self.screenshotsURL = url
                         }
-                        // TODO: Scan directory
-                    } else {
-                        if let error = result.error {
-                            print("Error opening screenshots directory: \(error)")
+                        // MARK: Scan directory for screenshots
+                        do {
+                            let results = try classifier.classifyScreenshots(in: url)
+                            print("Classification results:")
+                            print(results)
+                            DispatchQueue.main.async {
+                                self.classificationResults = results
+                                self.selectedDevices = Set(screenshotsByDevice.keys)
+                            }
+                        } catch {
+                            print(error)
                         }
+                    } catch let error as ScreenshotClassifier.Error {
+                        print("Error classifying screenshots: \(error)")
+                    } catch {
+                        print("Error opening screenshots directory: \(error)")
                     }
                 }
-                Text("Found \(0) screenshots. For \(0) languages.")
+                if !screenshots.isEmpty {
+                    Text("Found \(screenshots.count) screenshots for \(Set(screenshots.compactMap(\.locale)).count) locales.")
+                }
+                let missingLocaleCount = screenshots.filter({ $0.locale == nil }).count
+                if missingLocaleCount > 0 {
+                    Text("\(missingLocaleCount) screenshots don't have a locale. Please put them in subdirectories named after their locale (e.g. 'en-US')")
+                }
             }
             Section("Detected Devices") {
                 List {
-                    ForEach(Array(screenshotsByDevice.keys), id: \.name) { device in
+                    ForEach(Array(screenshotsByDevice.keys.sorted(on: \.name, by: <)), id: \.name) { device in
                         let screenshotCount = screenshotsByDevice[device]?.count ?? 0
-                        Toggle(sources: $selectedDevices, isOn: \.isSelected) {
+                        Toggle(isOn: selectedDevicesProxy(for: device)) {
                             HStack {
                                 Text(device.name)
                                 Spacer()
