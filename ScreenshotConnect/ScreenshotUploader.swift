@@ -9,25 +9,56 @@ import Foundation
 import AppStoreConnect_Swift_SDK
 
 class ScreenshotUploader {
-    private let configuration: APIConfiguration
-    private lazy var provider: APIProvider = APIProvider(configuration: configuration)
-
+    let api: AppStoreConnectAPI
     
-    init(issuerID: String, privateKeyID: String, privateKey: String) {
-        configuration = APIConfiguration(
-            issuerID: issuerID,
-            privateKeyID: privateKeyID,
-            privateKey: privateKey
-        )
+    init(api: AppStoreConnectAPI) {
+        self.api = api
     }
     
-    // Classifies the given filenames and assigns them to devices; returns a dictionary containing the detected devices and the amount of files associated with it
-    // Returns [Device: [URLs]]
-    func classifyFilenames(_ filenames: [URL]) -> [String: [URL]] {
-        return [:]
-    }
-    
-    func upload(_ screenshots: [URL], to app: String) async throws {
+    func upload(_ screenshots: [AppScreenshot], to appStoreVersionID: String) async throws {
+        let localizations = try await api.getLocalizations(for: appStoreVersionID)
+        // We need to make sure that all given localizations exist on App Store Connect:
+        let screenshotLocales = screenshots.compactMap(\.locale)
+        let existingLocales = localizations.map(\.locale)
+        guard !screenshots.contains(where: { $0.locale == nil }) else {
+            throw Error.screenshotMissingLocale
+        }
+        for locale in screenshotLocales {
+            guard existingLocales.contains(locale) else {
+                throw Error.unknownLocale(locale: locale)
+            }
+        }
         
+        // Each screenshot needs a screenshot set
+        var screenshotSets: [ACAppScreenshotSet: [AppScreenshot]] = [:]
+        
+        for screenshot in screenshots {
+            if let set = screenshotSets.keys.first(where: { set in
+                set.screenshotDisplayType == screenshot.device.screenshotDisplayType &&
+                set.locale == screenshot.locale
+            }) {
+                // We already have a matching set, append the screenshot
+                screenshotSets[set]!.append(screenshot)
+            } else {
+                // Get or create the matching screenshot set
+                let set = try await api.getOrCreateScreenshotSet(
+                    for: localizations.first(where: { $0.locale == screenshot.locale })!,
+                    screenshotDisplayType: screenshot.device.screenshotDisplayType
+                )
+                screenshotSets[set] = [screenshot]
+            }
+        }
+        
+        // At this point, we fetched the correct screenshot set for each screenshot
+        
+        for (set, screenshots) in screenshotSets {
+            // Upload the screenshots as part of the set
+            
+        }
+    }
+    
+    enum Error: Swift.Error {
+        case screenshotMissingLocale
+        case unknownLocale(locale: String)
     }
 }

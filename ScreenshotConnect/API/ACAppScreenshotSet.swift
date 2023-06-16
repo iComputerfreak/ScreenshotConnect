@@ -7,9 +7,15 @@
 
 import Foundation
 
-struct ACAppScreenshotSet: Decodable {
+struct ACAppScreenshotSet: Decodable, Hashable {
     let id: String
     let screenshotDisplayType: ScreenshotDisplayType
+    var locale: String? = nil
+    
+    init(id: String, screenshotDisplayType: ScreenshotDisplayType, locale: String?) {
+        self.id = id
+        self.screenshotDisplayType = screenshotDisplayType
+    }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)

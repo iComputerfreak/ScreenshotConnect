@@ -14,6 +14,10 @@ struct AppScreenshot {
     let locale: String?
     let fileSize: Int
     
+    var fileName: String {
+        url.lastPathComponent
+    }
+    
     init(url: URL, device: Device, locale: String?, fileSize: Int) {
         self.url = url
         self.device = device

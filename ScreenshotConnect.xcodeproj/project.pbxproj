@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB49147C2A3CB888004BE6DE /* ACAppScreenshotReservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB49147B2A3CB888004BE6DE /* ACAppScreenshotReservation.swift */; };
+		AB49147E2A3CB927004BE6DE /* ACAppScreenshotUploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB49147D2A3CB927004BE6DE /* ACAppScreenshotUploadOperation.swift */; };
+		AB4914802A3CBABB004BE6DE /* ACRequestHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB49147F2A3CBABB004BE6DE /* ACRequestHeader.swift */; };
+		AB4914822A3CBB82004BE6DE /* ACAssetDeliveryState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4914812A3CBB82004BE6DE /* ACAssetDeliveryState.swift */; };
+		AB4914842A3CBCC9004BE6DE /* ACAppMediaStateError.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4914832A3CBCC9004BE6DE /* ACAppMediaStateError.swift */; };
+		AB4914862A3CBDA1004BE6DE /* CreateAppScreenshotReservationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4914852A3CBDA1004BE6DE /* CreateAppScreenshotReservationPayload.swift */; };
 		ABCEF1372A293C5800295EB6 /* ScreenshotConnectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABCEF1362A293C5800295EB6 /* ScreenshotConnectApp.swift */; };
 		ABCEF1392A293C5800295EB6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABCEF1382A293C5800295EB6 /* ContentView.swift */; };
 		ABCEF13B2A293C5900295EB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ABCEF13A2A293C5900295EB6 /* Assets.xcassets */; };
@@ -22,10 +28,11 @@
 		ABD1BEA62A31186D00381AE8 /* ACLocalization.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BEA52A31186D00381AE8 /* ACLocalization.swift */; };
 		ABD1BEA82A311D2800381AE8 /* ACAppScreenshotSet.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BEA72A311D2800381AE8 /* ACAppScreenshotSet.swift */; };
 		ABD1BEAA2A311E8200381AE8 /* CreateAppScreenshotSetPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BEA92A311E8200381AE8 /* CreateAppScreenshotSetPayload.swift */; };
+		ABD1BEAC2A33C25200381AE8 /* SingleResultWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABD1BEAB2A33C25200381AE8 /* SingleResultWrapper.swift */; };
 		ABFF56F22A2A0E5B0069C243 /* AppStoreConnectAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF56F12A2A0E5B0069C243 /* AppStoreConnectAPI.swift */; };
 		ABFF56F52A2A0F7A0069C243 /* SwiftJWT in Frameworks */ = {isa = PBXBuildFile; productRef = ABFF56F42A2A0F7A0069C243 /* SwiftJWT */; };
 		ABFF56F82A2A11CA0069C243 /* ACApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF56F72A2A11CA0069C243 /* ACApp.swift */; };
-		ABFF56FA2A2A32920069C243 /* ResultWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF56F92A2A32920069C243 /* ResultWrapper.swift */; };
+		ABFF56FA2A2A32920069C243 /* ResultsWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF56F92A2A32920069C243 /* ResultsWrapper.swift */; };
 		ABFF56FD2A2A46B70069C243 /* JFUtils in Frameworks */ = {isa = PBXBuildFile; productRef = ABFF56FC2A2A46B70069C243 /* JFUtils */; };
 		ABFF56FF2A2A590F0069C243 /* AppScreenshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF56FE2A2A590F0069C243 /* AppScreenshot.swift */; };
 		ABFF57012A2A5AD40069C243 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABFF57002A2A5AD40069C243 /* SettingsView.swift */; };
@@ -43,6 +50,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AB49147B2A3CB888004BE6DE /* ACAppScreenshotReservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACAppScreenshotReservation.swift; sourceTree = "<group>"; };
+		AB49147D2A3CB927004BE6DE /* ACAppScreenshotUploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACAppScreenshotUploadOperation.swift; sourceTree = "<group>"; };
+		AB49147F2A3CBABB004BE6DE /* ACRequestHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACRequestHeader.swift; sourceTree = "<group>"; };
+		AB4914812A3CBB82004BE6DE /* ACAssetDeliveryState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACAssetDeliveryState.swift; sourceTree = "<group>"; };
+		AB4914832A3CBCC9004BE6DE /* ACAppMediaStateError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACAppMediaStateError.swift; sourceTree = "<group>"; };
+		AB4914852A3CBDA1004BE6DE /* CreateAppScreenshotReservationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAppScreenshotReservationPayload.swift; sourceTree = "<group>"; };
 		ABCEF1332A293C5800295EB6 /* ScreenshotConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenshotConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABCEF1362A293C5800295EB6 /* ScreenshotConnectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotConnectApp.swift; sourceTree = "<group>"; };
 		ABCEF1382A293C5800295EB6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -59,9 +72,10 @@
 		ABD1BEA52A31186D00381AE8 /* ACLocalization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACLocalization.swift; sourceTree = "<group>"; };
 		ABD1BEA72A311D2800381AE8 /* ACAppScreenshotSet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACAppScreenshotSet.swift; sourceTree = "<group>"; };
 		ABD1BEA92A311E8200381AE8 /* CreateAppScreenshotSetPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAppScreenshotSetPayload.swift; sourceTree = "<group>"; };
+		ABD1BEAB2A33C25200381AE8 /* SingleResultWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SingleResultWrapper.swift; sourceTree = "<group>"; };
 		ABFF56F12A2A0E5B0069C243 /* AppStoreConnectAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreConnectAPI.swift; sourceTree = "<group>"; };
 		ABFF56F72A2A11CA0069C243 /* ACApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACApp.swift; sourceTree = "<group>"; };
-		ABFF56F92A2A32920069C243 /* ResultWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultWrapper.swift; sourceTree = "<group>"; };
+		ABFF56F92A2A32920069C243 /* ResultsWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultsWrapper.swift; sourceTree = "<group>"; };
 		ABFF56FE2A2A590F0069C243 /* AppScreenshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppScreenshot.swift; sourceTree = "<group>"; };
 		ABFF57002A2A5AD40069C243 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		ABFF57022A2B584C0069C243 /* JFLiterals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JFLiterals.swift; sourceTree = "<group>"; };
@@ -113,10 +127,10 @@
 				ABCEF1362A293C5800295EB6 /* ScreenshotConnectApp.swift */,
 				ABD1BE982A30B4E800381AE8 /* ContentView */,
 				ABFF57002A2A5AD40069C243 /* SettingsView.swift */,
-				ABCEF1452A293E7400295EB6 /* ScreenshotUploader.swift */,
 				ABFF56FE2A2A590F0069C243 /* AppScreenshot.swift */,
 				ABFF57022A2B584C0069C243 /* JFLiterals.swift */,
 				ABFF57062A2B76930069C243 /* ScreenshotClassifier.swift */,
+				ABCEF1452A293E7400295EB6 /* ScreenshotUploader.swift */,
 				ABFF57082A2B8B690069C243 /* Device.swift */,
 				ABFF570A2A2B8B7B0069C243 /* ScreenshotDisplayType.swift */,
 				ABFF570C2A2E0C1F0069C243 /* Preferences */,
@@ -154,7 +168,8 @@
 			isa = PBXGroup;
 			children = (
 				ABFF56F12A2A0E5B0069C243 /* AppStoreConnectAPI.swift */,
-				ABFF56F92A2A32920069C243 /* ResultWrapper.swift */,
+				ABFF56F92A2A32920069C243 /* ResultsWrapper.swift */,
+				ABD1BEAB2A33C25200381AE8 /* SingleResultWrapper.swift */,
 				ABFF56F72A2A11CA0069C243 /* ACApp.swift */,
 				ABFF57042A2B60580069C243 /* ACBuild.swift */,
 				ABFF57152A2E11290069C243 /* ACStoreVersion.swift */,
@@ -163,6 +178,12 @@
 				ABD1BEA52A31186D00381AE8 /* ACLocalization.swift */,
 				ABD1BEA72A311D2800381AE8 /* ACAppScreenshotSet.swift */,
 				ABD1BEA92A311E8200381AE8 /* CreateAppScreenshotSetPayload.swift */,
+				AB49147B2A3CB888004BE6DE /* ACAppScreenshotReservation.swift */,
+				AB4914852A3CBDA1004BE6DE /* CreateAppScreenshotReservationPayload.swift */,
+				AB49147D2A3CB927004BE6DE /* ACAppScreenshotUploadOperation.swift */,
+				AB49147F2A3CBABB004BE6DE /* ACRequestHeader.swift */,
+				AB4914812A3CBB82004BE6DE /* ACAssetDeliveryState.swift */,
+				AB4914832A3CBCC9004BE6DE /* ACAppMediaStateError.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -258,13 +279,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				ABFF57142A2E0D620069C243 /* PublisherObservableObject.swift in Sources */,
-				ABFF56FA2A2A32920069C243 /* ResultWrapper.swift in Sources */,
+				ABFF56FA2A2A32920069C243 /* ResultsWrapper.swift in Sources */,
+				AB49147C2A3CB888004BE6DE /* ACAppScreenshotReservation.swift in Sources */,
+				AB4914822A3CBB82004BE6DE /* ACAssetDeliveryState.swift in Sources */,
 				ABFF570B2A2B8B7B0069C243 /* ScreenshotDisplayType.swift in Sources */,
 				ABFF57012A2A5AD40069C243 /* SettingsView.swift in Sources */,
 				ABCEF1392A293C5800295EB6 /* ContentView.swift in Sources */,
+				AB4914802A3CBABB004BE6DE /* ACRequestHeader.swift in Sources */,
 				ABFF57092A2B8B690069C243 /* Device.swift in Sources */,
 				ABFF56FF2A2A590F0069C243 /* AppScreenshot.swift in Sources */,
 				ABFF56F22A2A0E5B0069C243 /* AppStoreConnectAPI.swift in Sources */,
+				AB4914842A3CBCC9004BE6DE /* ACAppMediaStateError.swift in Sources */,
+				AB4914862A3CBDA1004BE6DE /* CreateAppScreenshotReservationPayload.swift in Sources */,
 				ABCEF1372A293C5800295EB6 /* ScreenshotConnectApp.swift in Sources */,
 				ABD1BEAA2A311E8200381AE8 /* CreateAppScreenshotSetPayload.swift in Sources */,
 				ABFF570E2A2E0CFA0069C243 /* Preferences.swift in Sources */,
@@ -276,6 +302,7 @@
 				ABD1BE9A2A30B64000381AE8 /* SelectScreenshotsButton.swift in Sources */,
 				ABD1BE9C2A30B68A00381AE8 /* SelectDevicesList.swift in Sources */,
 				ABFF57162A2E11290069C243 /* ACStoreVersion.swift in Sources */,
+				ABD1BEAC2A33C25200381AE8 /* SingleResultWrapper.swift in Sources */,
 				ABD1BEA62A31186D00381AE8 /* ACLocalization.swift in Sources */,
 				ABFF56F82A2A11CA0069C243 /* ACApp.swift in Sources */,
 				ABD1BE9E2A30B70900381AE8 /* SelectAppPicker.swift in Sources */,
@@ -284,6 +311,7 @@
 				ABD1BEA42A30BEAC00381AE8 /* UploadButton.swift in Sources */,
 				ABD1BEA82A311D2800381AE8 /* ACAppScreenshotSet.swift in Sources */,
 				ABFF57072A2B76930069C243 /* ScreenshotClassifier.swift in Sources */,
+				AB49147E2A3CB927004BE6DE /* ACAppScreenshotUploadOperation.swift in Sources */,
 				ABFF571A2A2E12760069C243 /* ACAppStoreVersionState.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

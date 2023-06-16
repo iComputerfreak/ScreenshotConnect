@@ -56,58 +56,133 @@ actor AppStoreConnectAPI: ObservableObject {
         self.privateKey = privateKey
     }
     
+    /// Fetches a list of all ``ACApp``s available on App Store Connect.
+    /// - Returns: All existing ``ACApp``s
     func getApps() async throws -> [ACApp] {
-        guard let result = try await request(APIPath.apps, method: .get, as: ResultWrapper<ACApp>.self) else {
-            // If we got an empty result, something went wrong
-            throw Error.emptyResponseBody
-        }
-        return result.data
+        try await request(APIPath.apps, method: .get, as: ResultsWrapper<ACApp>.self).data
     }
     
+    /// Fetches the app icon URL of the most recent app version.
+    /// - Parameter appID: The app ID to fetch the app icon for
+    /// - Returns: The URL referencing the app icon, or `nil`, if the most recent version does not have an app icon
     func getAppIcon(for appID: String) async throws -> URL? {
-        try await request(APIPath.appBuilds(appID: appID), method: .get, as: ResultWrapper<ACBuild>.self)?
+        try await request(APIPath.appBuilds(appID: appID), method: .get, as: ResultsWrapper<ACBuild>.self)
             .data
             .max(on: \.version, by: <)?
             .appIconURL
     }
     
     // TODO: Filter out versions for which we cannot upload screenshots anymore
+    /// Fetches all existing app store versions of the given app ID.
+    /// - Parameter appID: The app ID to fetch versions for
+    /// - Returns: All existing app versions
     func getAppVersions(for appID: String) async throws -> [String] {
-        try await request(APIPath.appStoreVersions(appID: appID), method: .get, as: ResultWrapper<ACStoreVersion>.self)?
+        try await request(APIPath.appStoreVersions(appID: appID), method: .get, as: ResultsWrapper<ACStoreVersion>.self)
             .data
             .sorted(on: \.creationDate, by: >)
-            .map(\.version) ?? []
+            .map(\.version)
     }
     
+    /// Fetches all existing ``ACLocalization``s for the given app store version.
+    /// - Parameter appStoreVersionID: The app store version ID to fetch localizations for
+    /// - Returns: All existing ``ACLocalization``s of the given app store version ID
     func getLocalizations(for appStoreVersionID: String) async throws -> [ACLocalization] {
-        try await request(APIPath.appStoreVersionLocalizations(appStoreVersionID: appStoreVersionID), method: .get, as: ResultWrapper<ACLocalization>.self)?
-            .data ?? []
+        try await request(
+            APIPath.appStoreVersionLocalizations(appStoreVersionID: appStoreVersionID),
+            method: .get,
+            as: ResultsWrapper<ACLocalization>.self
+        )
+            .data
     }
     
+    /// Fetches all existing ``ACAppScreenshotSet``s for the given localization.
+    /// - Parameter localization: The localization for which to fetch the screenshot sets
+    /// - Returns: All existing ``ACAppScreenshotSet``s matching the given localization
     func getScreenshotSets(for localization: ACLocalization) async throws -> [ACAppScreenshotSet] {
-        try await request(
+        var sets = try await request(
             APIPath.appScreenshotSets(for: localization.id),
             method: .get,
-            as: ResultWrapper<ACAppScreenshotSet>.self
-        )?
-        .data ?? []
+            as: ResultsWrapper<ACAppScreenshotSet>.self
+        )
+        .data
+        
+        for i in 0..<sets.count {
+            sets[i].locale = localization.locale
+        }
+        
+        return sets
     }
     
+    /// Creates a new ``ACAppScreenshotSet``.
+    /// - Parameters:
+    ///   - localization: The localization for which to create the screenshot set
+    ///   - screenshotDisplayType: The display type for which to create the screenshot set
+    /// - Returns: The created ``ACAppScreenshotSet``
     func createScreenshotSet(
         for localization: ACLocalization,
         screenshotDisplayType: ScreenshotDisplayType
-    ) async throws {
+    ) async throws -> ACAppScreenshotSet {
         let payload = CreateAppScreenshotSetPayload(
             screenshotDisplayType: screenshotDisplayType,
             localization: localization
         )
-        _ = try await request(
+        // TODO: What if this produces an error (e.g. because a set already exists)
+        var set = try await request(
             APIPath.appScreenshotSets,
             method: .post,
-            as: Data.self,
+            as: SingleResultWrapper<ACAppScreenshotSet>.self,
             body: Self.jsonEncoder.encode(payload),
             contentType: .json
+        ).data
+        set.locale = localization.locale
+        return set
+    }
+    
+    /// Either returns an existing ``ACAppScreenshotSet`` or creates a new one.
+    /// - Parameters:
+    ///   - localization: The localization for which to fetch or create the screenshot set
+    ///   - screenshotDisplayType: The display type for which to fetch or create the screenshot set
+    /// - Returns: The ``ACAppScreenshotSet``
+    func getOrCreateScreenshotSet(
+        for localization: ACLocalization,
+        screenshotDisplayType: ScreenshotDisplayType
+    ) async throws -> ACAppScreenshotSet {
+        // Check if a set already exists
+        if
+            let set = try await getScreenshotSets(for: localization)
+                .first(where: { $0.screenshotDisplayType == screenshotDisplayType })
+        {
+            return set
+        }
+        // Create a new one
+        return try await createScreenshotSet(for: localization, screenshotDisplayType: screenshotDisplayType)
+    }
+    
+    func uploadScreenshots(_ screenshots: [AppScreenshot], to appStoreVersionID: String) async throws {
+        
+    }
+    
+    /// Reserves a screenshot on App Store Connect and requests upload operations to transmit it.
+    /// - Parameters:
+    ///   - appScreenshot: The screenshot to reserve on App Store Connect
+    ///   - appScreenshotSet: The screenshot set where the screenshot is uploaded to
+    /// - Returns: The reservation containing the upload operations used to upload the screenshot
+    func reserve(
+        _ appScreenshot: AppScreenshot,
+        in appScreenshotSet: ACAppScreenshotSet
+    ) async throws -> ACAppScreenshotReservation {
+        let payload = CreateAppScreenshotReservationPayload(
+            fileName: appScreenshot.fileName,
+            fileSize: appScreenshot.fileSize,
+            screenshotSetID: appScreenshotSet.id
         )
+        return try await request(
+            APIPath.appScreenshots,
+            method: .post,
+            as: SingleResultWrapper<ACAppScreenshotReservation>.self,
+            body: Self.jsonEncoder.encode(payload),
+            contentType: .json
+        ).data
     }
     
     /// Executes an HTTP request to the App Store Connect API.
@@ -131,7 +206,7 @@ actor AppStoreConnectAPI: ObservableObject {
         headers: [String: String] = [:],
         body: Data? = nil,
         contentType: ContentType? = nil
-    ) async throws -> ResponseType? {
+    ) async throws -> ResponseType {
         // Build the URL
         var urlComponents = URLComponents()
         urlComponents.scheme = "https"
@@ -162,7 +237,7 @@ actor AppStoreConnectAPI: ObservableObject {
         if let httpResponse = response as? HTTPURLResponse {
             guard httpResponse.statusCode == 200 else {
                 print("Error: HTTP response returned code \(httpResponse.statusCode)")
-                throw Error.invalidStatusCode(httpResponse.statusCode, responseBody)
+                throw Error.invalidStatusCode(statusCode: httpResponse.statusCode, response: responseBody)
             }
         } else {
             print("Error: Response is not an HTTPURLResponse")
@@ -171,11 +246,11 @@ actor AppStoreConnectAPI: ObservableObject {
         }
         
         // Decode the response body (if there is any)
-        if !data.isEmpty {
-            return try Self.jsonDecoder.decode(ResponseType.self, from: data)
-        } else {
-            return nil
+        guard !data.isEmpty else {
+            throw Error.emptyResponseBody
         }
+        // TODO: We need to detect if the response is instead an error and then throw that error
+        return try Self.jsonDecoder.decode(ResponseType.self, from: data)
     }
 }
 
@@ -191,6 +266,7 @@ extension AppStoreConnectAPI {
         static func appStoreVersionLocalizations(appStoreVersionID: String) -> String {
             "/v1/appStoreVersions/\(appStoreVersionID)/appStoreVersionLocalizations"
         }
+        static let appScreenshots = "/v1/appScreenshots"
     }
     
     enum ContentType: String {
@@ -208,7 +284,7 @@ extension AppStoreConnectAPI {
     
     enum Error: Swift.Error {
         case invalidURLComponents
-        case invalidStatusCode(Int, String?)
+        case invalidStatusCode(statusCode: Int, response: String?)
         case invalidResponse
         case emptyResponseBody
         case missingPrivateKey

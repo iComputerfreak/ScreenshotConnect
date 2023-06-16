@@ -11,6 +11,11 @@ struct ACLocalization: Decodable {
     let id: String
     let locale: String
     
+    init(id: String, locale: String) {
+        self.id = id
+        self.locale = locale
+    }
+    
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(String.self, forKey: .id)
