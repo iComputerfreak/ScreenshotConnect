@@ -22,6 +22,11 @@ struct SelectVersionPicker: View {
                     .tag(version as String?)
             }
         }
+        // Load once on appear (initial app selected)
+        .onAppear(perform: loadVersions)
+        .onChange(of: selectedApp) { _ in
+            loadVersions()
+        }
     }
     
     func loadVersions() {

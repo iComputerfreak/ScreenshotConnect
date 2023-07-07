@@ -14,6 +14,7 @@ struct AppInfoView: View {
     
     var body: some View {
         HStack {
+            // TODO: If there is no image, this view should not display a loading indicator indefinitely
             AsyncImage(url: appIconURL) { image in
                 image
                     .resizable()
@@ -31,6 +32,7 @@ struct AppInfoView: View {
             }
         }
         // TODO: Change when on macOS 14
+        .onAppear(perform: loadAppIcon)
         .onChange(of: app, perform: { _ in loadAppIcon() })
     }
     

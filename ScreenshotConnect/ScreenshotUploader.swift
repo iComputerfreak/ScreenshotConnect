@@ -53,7 +53,7 @@ class ScreenshotUploader {
         
         for (set, screenshots) in screenshotSets {
             // Upload the screenshots as part of the set
-            
+            try await api.uploadScreenshots(screenshots, to: set)
         }
     }
     

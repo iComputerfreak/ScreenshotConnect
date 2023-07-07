@@ -13,6 +13,7 @@
 		AB4914822A3CBB82004BE6DE /* ACAssetDeliveryState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4914812A3CBB82004BE6DE /* ACAssetDeliveryState.swift */; };
 		AB4914842A3CBCC9004BE6DE /* ACAppMediaStateError.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4914832A3CBCC9004BE6DE /* ACAppMediaStateError.swift */; };
 		AB4914862A3CBDA1004BE6DE /* CreateAppScreenshotReservationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4914852A3CBDA1004BE6DE /* CreateAppScreenshotReservationPayload.swift */; };
+		ABB9F7AD2A58589A00B23E5F /* CommitUploadPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABB9F7AC2A58589A00B23E5F /* CommitUploadPayload.swift */; };
 		ABCEF1372A293C5800295EB6 /* ScreenshotConnectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABCEF1362A293C5800295EB6 /* ScreenshotConnectApp.swift */; };
 		ABCEF1392A293C5800295EB6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABCEF1382A293C5800295EB6 /* ContentView.swift */; };
 		ABCEF13B2A293C5900295EB6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ABCEF13A2A293C5900295EB6 /* Assets.xcassets */; };
@@ -56,6 +57,7 @@
 		AB4914812A3CBB82004BE6DE /* ACAssetDeliveryState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACAssetDeliveryState.swift; sourceTree = "<group>"; };
 		AB4914832A3CBCC9004BE6DE /* ACAppMediaStateError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACAppMediaStateError.swift; sourceTree = "<group>"; };
 		AB4914852A3CBDA1004BE6DE /* CreateAppScreenshotReservationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAppScreenshotReservationPayload.swift; sourceTree = "<group>"; };
+		ABB9F7AC2A58589A00B23E5F /* CommitUploadPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitUploadPayload.swift; sourceTree = "<group>"; };
 		ABCEF1332A293C5800295EB6 /* ScreenshotConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenshotConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABCEF1362A293C5800295EB6 /* ScreenshotConnectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotConnectApp.swift; sourceTree = "<group>"; };
 		ABCEF1382A293C5800295EB6 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -184,6 +186,7 @@
 				AB49147F2A3CBABB004BE6DE /* ACRequestHeader.swift */,
 				AB4914812A3CBB82004BE6DE /* ACAssetDeliveryState.swift */,
 				AB4914832A3CBCC9004BE6DE /* ACAppMediaStateError.swift */,
+				ABB9F7AC2A58589A00B23E5F /* CommitUploadPayload.swift */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -302,6 +305,7 @@
 				ABD1BE9A2A30B64000381AE8 /* SelectScreenshotsButton.swift in Sources */,
 				ABD1BE9C2A30B68A00381AE8 /* SelectDevicesList.swift in Sources */,
 				ABFF57162A2E11290069C243 /* ACStoreVersion.swift in Sources */,
+				ABB9F7AD2A58589A00B23E5F /* CommitUploadPayload.swift in Sources */,
 				ABD1BEAC2A33C25200381AE8 /* SingleResultWrapper.swift in Sources */,
 				ABD1BEA62A31186D00381AE8 /* ACLocalization.swift in Sources */,
 				ABFF56F82A2A11CA0069C243 /* ACApp.swift in Sources */,

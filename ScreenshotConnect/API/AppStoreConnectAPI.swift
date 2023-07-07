@@ -9,6 +9,7 @@ import Foundation
 import SwiftJWT
 import SwiftUI
 import Combine
+import CryptoKit
 
 actor AppStoreConnectAPI: ObservableObject {
     private static let jsonDecoder = JSONDecoder()
@@ -158,8 +159,17 @@ actor AppStoreConnectAPI: ObservableObject {
         return try await createScreenshotSet(for: localization, screenshotDisplayType: screenshotDisplayType)
     }
     
-    func uploadScreenshots(_ screenshots: [AppScreenshot], to appStoreVersionID: String) async throws {
-        
+    func uploadScreenshots(
+        _ screenshots: [AppScreenshot],
+        to screenshotSet: ACAppScreenshotSet
+    ) async throws {
+        for screenshot in screenshots {
+            // Reserve the screenshot
+            let reservation = try await reserve(screenshot, in: screenshotSet)
+            let fileData = try Data(contentsOf: screenshot.url)
+            try await uploadData(fileData, for: reservation)
+            try await commitUpload(of: screenshot, for: reservation.id)
+        }
     }
     
     /// Reserves a screenshot on App Store Connect and requests upload operations to transmit it.
@@ -171,11 +181,11 @@ actor AppStoreConnectAPI: ObservableObject {
         _ appScreenshot: AppScreenshot,
         in appScreenshotSet: ACAppScreenshotSet
     ) async throws -> ACAppScreenshotReservation {
-        let payload = CreateAppScreenshotReservationPayload(
+        let payload = SingleResultWrapper(data: CreateAppScreenshotReservationPayload(
             fileName: appScreenshot.fileName,
             fileSize: appScreenshot.fileSize,
             screenshotSetID: appScreenshotSet.id
-        )
+        ))
         return try await request(
             APIPath.appScreenshots,
             method: .post,
@@ -185,21 +195,42 @@ actor AppStoreConnectAPI: ObservableObject {
         ).data
     }
     
-    /// Executes an HTTP request to the App Store Connect API.
-    ///
-    ///     let result = try await request(.apps, method: .get, as: ResultWrapper<ACApp>.self)
-    ///
-    /// - Parameters:
-    ///   - path: The API path to use for the request
-    ///   - method: The HTTP method for the request
-    ///   - responseType: The decodable type of the response body JSON. Usually this is some specialization of `ResultWrapper`.
-    ///   - queryItems: The array of query items to append to the URL
-    ///   - headers: The array of headers to specify for the request (in addition to the bearer token)
-    ///   - body: The body of the request
-    ///   - contentType: The content type of the body (will be appended as a header)
-    /// - Returns: The decoded response body, or `nil`, if the response body is empty.
+    func uploadData(_ data: Data, for reservation: ACAppScreenshotReservation) async throws {
+        for operation in reservation.uploadOperations {
+            let start = operation.offset
+            let end = start + operation.length - 1
+            // The chunk to upload in this operation
+            let chunk = data[start...end]
+            let result = try await request(
+                url: operation.url,
+                method: .put,
+                as: Data.self, // TODO: ResponseType
+                body: chunk,
+                contentType: .png
+            )
+        }
+        // TODO: Return something or only throw?
+    }
+    
+    func commitUpload(of screenshot: AppScreenshot, for appScreenshotID: String) async throws {
+        let fileData = try Data(contentsOf: screenshot.url)
+        let md5 = Insecure.MD5.hash(data: fileData)
+        let payload = SingleResultWrapper(data: CommitUploadPayload(
+            appScreenshotID: appScreenshotID,
+            sourceFileChecksum: md5.description
+        ))
+        try await request(
+            APIPath.appScreenshots(for: appScreenshotID),
+            method: .patch,
+            as: Data.self, // TODO: What type
+            body: Self.jsonEncoder.encode(payload),
+            contentType: .json
+        )
+        // TODO: Return
+    }
+    
     private func request<ResponseType: Decodable>(
-        _ path: String,
+        url: URL,
         method: HTTPMethod,
         as responseType: ResponseType.Type,
         queryItems: [String: String?] = [:],
@@ -207,16 +238,10 @@ actor AppStoreConnectAPI: ObservableObject {
         body: Data? = nil,
         contentType: ContentType? = nil
     ) async throws -> ResponseType {
-        // Build the URL
-        var urlComponents = URLComponents()
-        urlComponents.scheme = "https"
-        urlComponents.host = "api.appstoreconnect.apple.com"
-        urlComponents.path = path
+        // Append the query items
+        var url = url
         if !queryItems.isEmpty {
-            urlComponents.queryItems = queryItems.map(URLQueryItem.init(name:value:))
-        }
-        guard let url = urlComponents.url else {
-            throw Error.invalidURLComponents
+            url.append(queryItems: queryItems.map(URLQueryItem.init(name:value:)))
         }
         
         // Configure the request
@@ -252,6 +277,49 @@ actor AppStoreConnectAPI: ObservableObject {
         // TODO: We need to detect if the response is instead an error and then throw that error
         return try Self.jsonDecoder.decode(ResponseType.self, from: data)
     }
+    
+    /// Executes an HTTP request to the App Store Connect API.
+    ///
+    ///     let result = try await request(.apps, method: .get, as: ResultWrapper<ACApp>.self)
+    ///
+    /// - Parameters:
+    ///   - path: The API path to use for the request
+    ///   - method: The HTTP method for the request
+    ///   - responseType: The decodable type of the response body JSON. Usually this is some specialization of `ResultWrapper`.
+    ///   - queryItems: The array of query items to append to the URL
+    ///   - headers: The array of headers to specify for the request (in addition to the bearer token)
+    ///   - body: The body of the request
+    ///   - contentType: The content type of the body (will be appended as a header)
+    /// - Returns: The decoded response body, or `nil`, if the response body is empty.
+    private func request<ResponseType: Decodable>(
+        _ path: String,
+        method: HTTPMethod,
+        as responseType: ResponseType.Type,
+        queryItems: [String: String?] = [:],
+        headers: [String: String] = [:],
+        body: Data? = nil,
+        contentType: ContentType? = nil
+    ) async throws -> ResponseType {
+        // Build the URL
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = "api.appstoreconnect.apple.com"
+        urlComponents.path = path
+        // Don't append the queryItems, as that is done later
+        guard let url = urlComponents.url else {
+            throw Error.invalidURLComponents
+        }
+        
+        return try await request(
+            url: url,
+            method: method,
+            as: responseType,
+            queryItems: queryItems,
+            headers: headers,
+            body: body,
+            contentType: contentType
+        )
+    }
 }
 
 extension AppStoreConnectAPI {
@@ -267,6 +335,9 @@ extension AppStoreConnectAPI {
             "/v1/appStoreVersions/\(appStoreVersionID)/appStoreVersionLocalizations"
         }
         static let appScreenshots = "/v1/appScreenshots"
+        static func appScreenshots(for appScreenshotID: String) -> String {
+            appScreenshots + "/\(appScreenshotID)"
+        }
     }
     
     enum ContentType: String {

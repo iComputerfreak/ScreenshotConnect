@@ -8,6 +8,7 @@
 import Foundation
 
 struct ACAppScreenshotReservation: Decodable {
+    let id: String
     let fileName: String
     let fileSize: Int
     let uploadOperations: [ACAppScreenshotUploadOperation]

@@ -8,9 +8,19 @@
 import SwiftUI
 
 struct UploadButton: View {
+    @EnvironmentObject private var api: AppStoreConnectAPI
+    @Binding var selectedVersion: String
+    
     var body: some View {
         Button {
-            
+            Task(priority: .high) {
+                do {
+                    let uploader = ScreenshotUploader(api: api)
+                    // TODO: Upload
+                } catch {
+                    print(error)
+                }
+            }
         } label: {
             Text("Upload Screenshots")
                 .font(.title3)
