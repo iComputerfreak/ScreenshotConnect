@@ -25,8 +25,12 @@ struct UploadButton: View {
                         viewModel.isUploading = true
                     }
                     let uploader = ScreenshotUploader(api: api)
-                    try await uploader.upload(viewModel.screenshotsToUpload, to: selectedVersion)
-                    // TODO: Upload
+                    try await uploader.upload(viewModel.screenshotsToUpload, to: selectedVersion) { progress in
+                        // When the progress changes, update the view model
+                        DispatchQueue.main.async {
+                            viewModel.uploadedScreenshots = progress
+                        }
+                    }
                 } catch {
                     print(error)
                 }

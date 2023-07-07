@@ -57,6 +57,8 @@ actor AppStoreConnectAPI: ObservableObject {
         self.privateKey = privateKey
     }
     
+    // TODO: Add function to remove screenshot / all screenshots
+    
     /// Fetches a list of all ``ACApp``s available on App Store Connect.
     /// - Returns: All existing ``ACApp``s
     func getApps() async throws -> [ACApp] {
@@ -160,14 +162,20 @@ actor AppStoreConnectAPI: ObservableObject {
     
     func uploadScreenshots(
         _ screenshots: [AppScreenshot],
-        to screenshotSet: ACAppScreenshotSet
+        to screenshotSet: ACAppScreenshotSet,
+        onProgress: ((Int) -> Void)? = nil
     ) async throws {
-        for screenshot in screenshots {
+        print("Uploading \(screenshots.count) screenshots")
+        var uploadedCount = 0
+        // Upload the screenshots alphabetically
+        for screenshot in screenshots.sorted(on: \.fileName, by: <) {
             // Reserve the screenshot
             let reservation = try await reserve(screenshot, in: screenshotSet)
             let fileData = try Data(contentsOf: screenshot.url)
             try await uploadData(fileData, for: reservation)
-            try await commitUpload(of: screenshot, for: reservation.id)
+            _ = try await commitUpload(of: screenshot, for: reservation.id)
+            uploadedCount += 1
+            onProgress?(uploadedCount)
         }
     }
     

@@ -22,7 +22,11 @@ class ScreenshotUploader {
         try await upload(screenshots, to: version)
     }
     
-    func upload(_ screenshots: [AppScreenshot], to appStoreVersion: ACAppStoreVersion) async throws {
+    func upload(
+        _ screenshots: [AppScreenshot],
+        to appStoreVersion: ACAppStoreVersion,
+        onProgress: ((Int) -> Void)? = nil
+    ) async throws {
         let appStoreVersionID = appStoreVersion.id
         let localizations = try await api.getLocalizations(for: appStoreVersionID)
         // We need to make sure that all given localizations exist on App Store Connect:
@@ -40,8 +44,7 @@ class ScreenshotUploader {
         // Each screenshot needs a screenshot set
         var screenshotSets: [ACAppScreenshotSet: [AppScreenshot]] = [:]
         
-        // Upload the files alphabetically
-        for screenshot in screenshots.sorted(on: \.fileName, by: <) {
+        for screenshot in screenshots {
             if let set = screenshotSets.keys.first(where: { set in
                 set.screenshotDisplayType == screenshot.device.screenshotDisplayType &&
                 set.locale == screenshot.locale
@@ -59,10 +62,17 @@ class ScreenshotUploader {
         }
         
         // At this point, we fetched the correct screenshot set for each screenshot
-        
+        print("Uploading \(screenshotSets.count) screenshot sets")
+        let totalScreenshotCount = screenshotSets.map(\.value).joined().count
+        // The amount of uploaded screenshots (excluding the ones from the currently uploading set)
+        var uploadedCount = 0
         for (set, screenshots) in screenshotSets {
             // Upload the screenshots as part of the set
-            try await api.uploadScreenshots(screenshots, to: set)
+            try await api.uploadScreenshots(screenshots, to: set) { _ in
+                // Every time a screenshot is uploaded, increase the progress
+                uploadedCount += 1
+                onProgress?(uploadedCount)
+            }
         }
     }
     
