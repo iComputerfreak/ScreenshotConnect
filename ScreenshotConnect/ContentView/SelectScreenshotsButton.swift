@@ -10,24 +10,22 @@ import SwiftUI
 struct SelectScreenshotsButton: View {
     let classifier = ScreenshotClassifier()
     
-    @State private var showingScreenshotsImporter = false
-    @Binding var screenshotsURL: URL?
+    @EnvironmentObject private var viewModel: ContentViewModel
     
-    @Binding var classificationResults: [Result<AppScreenshot, ScreenshotClassifier.Error>]
-    @Binding var selectedDevices: Set<Device>
+    @State private var showingScreenshotsImporter = false
     
     var body: some View {
         HStack {
             Button("Select Screenshots Folder") {
                 self.showingScreenshotsImporter = true
             }
-            Text(screenshotsURL?.path() ?? "No directory selected")
+            Text(viewModel.screenshotsURL?.path() ?? "No directory selected")
         }
         .fileImporter(isPresented: $showingScreenshotsImporter, allowedContentTypes: [.directory]) { result in
             do {
                 let url = try result.get()
                 DispatchQueue.main.async {
-                    self.screenshotsURL = url
+                    self.viewModel.screenshotsURL = url
                 }
                 // MARK: Scan directory for screenshots
                 do {
@@ -35,8 +33,9 @@ struct SelectScreenshotsButton: View {
                     print("Classification results:")
                     print(results)
                     DispatchQueue.main.async {
-                        self.classificationResults = results
-                        self.selectedDevices = Set(classificationResults.compactMap(\.value?.device))
+                        self.viewModel.classificationResults = results
+                        self.viewModel.selectedDevices = Set(self.viewModel.classificationResults
+                            .compactMap(\.value?.device))
                     }
                 } catch {
                     print(error)

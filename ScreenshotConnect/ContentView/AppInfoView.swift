@@ -9,8 +9,9 @@ import SwiftUI
 
 struct AppInfoView: View {
     @EnvironmentObject private var api: AppStoreConnectAPI
+    @EnvironmentObject private var viewModel: ContentViewModel
+    
     @State private var appIconURL: URL? = nil
-    @Binding var app: ACApp?
     
     var body: some View {
         HStack {
@@ -26,20 +27,20 @@ struct AppInfoView: View {
             }
             .frame(width: 50, height: 50)
             VStack(alignment: .leading) {
-                Text(app?.name ?? "Unknown")
+                Text(viewModel.selectedApp?.name ?? "Unknown")
                     .font(.title)
-                Text(app?.bundleID ?? "Unknown")
+                Text(viewModel.selectedApp?.bundleID ?? "Unknown")
             }
         }
         // TODO: Change when on macOS 14
         .onAppear(perform: loadAppIcon)
-        .onChange(of: app, perform: { _ in loadAppIcon() })
+        .onChange(of: viewModel.selectedApp, perform: { _ in loadAppIcon() })
     }
     
     func loadAppIcon() {
-        print("App changed to \(app?.name ?? "nil")")
+        print("App changed to \(viewModel.selectedApp?.name ?? "nil")")
         self.appIconURL = nil
-        guard let appID = app?.id else {
+        guard let appID = viewModel.selectedApp?.id else {
             print("Deselected an app")
             return
         }

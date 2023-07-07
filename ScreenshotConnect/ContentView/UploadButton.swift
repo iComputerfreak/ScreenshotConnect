@@ -9,16 +9,29 @@ import SwiftUI
 
 struct UploadButton: View {
     @EnvironmentObject private var api: AppStoreConnectAPI
-    @Binding var selectedVersion: String
+    @EnvironmentObject private var viewModel: ContentViewModel
     
     var body: some View {
         Button {
+            guard
+                let selectedVersion = viewModel.selectedAppVersion
+            else {
+                assertionFailure("We should not have been able to press that button without a version selected")
+                return
+            }
             Task(priority: .high) {
                 do {
+                    await MainActor.run {
+                        viewModel.isUploading = true
+                    }
                     let uploader = ScreenshotUploader(api: api)
+                    try await uploader.upload(viewModel.screenshotsToUpload, to: selectedVersion)
                     // TODO: Upload
                 } catch {
                     print(error)
+                }
+                await MainActor.run {
+                    viewModel.isUploading = false
                 }
             }
         } label: {
@@ -33,6 +46,7 @@ struct UploadButton: View {
                 )
         }
         .buttonStyle(.borderless)
+        .disabled(viewModel.selectedAppVersion == nil)
     }
 }
 

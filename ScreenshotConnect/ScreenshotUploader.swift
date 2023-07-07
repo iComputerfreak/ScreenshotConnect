@@ -15,7 +15,15 @@ class ScreenshotUploader {
         self.api = api
     }
     
-    func upload(_ screenshots: [AppScreenshot], to appStoreVersionID: String) async throws {
+    func upload(_ screenshots: [AppScreenshot], to app: ACApp, version: String) async throws {
+        guard let version = try await api.getAppStoreVersions(for: app.id).first(where: \.version, equals: version) else {
+            throw Error.unknownVersion
+        }
+        try await upload(screenshots, to: version)
+    }
+    
+    func upload(_ screenshots: [AppScreenshot], to appStoreVersion: ACAppStoreVersion) async throws {
+        let appStoreVersionID = appStoreVersion.id
         let localizations = try await api.getLocalizations(for: appStoreVersionID)
         // We need to make sure that all given localizations exist on App Store Connect:
         let screenshotLocales = screenshots.compactMap(\.locale)
@@ -32,7 +40,8 @@ class ScreenshotUploader {
         // Each screenshot needs a screenshot set
         var screenshotSets: [ACAppScreenshotSet: [AppScreenshot]] = [:]
         
-        for screenshot in screenshots {
+        // Upload the files alphabetically
+        for screenshot in screenshots.sorted(on: \.fileName, by: <) {
             if let set = screenshotSets.keys.first(where: { set in
                 set.screenshotDisplayType == screenshot.device.screenshotDisplayType &&
                 set.locale == screenshot.locale
@@ -60,5 +69,8 @@ class ScreenshotUploader {
     enum Error: Swift.Error {
         case screenshotMissingLocale
         case unknownLocale(locale: String)
+        case unknownVersion
+        case noAppSelected
+        case noAppVersionSelected
     }
 }

@@ -7,6 +7,8 @@
 
 import Foundation
 
+// TODO: Encode into data container instead of using ResultWrapper
+
 struct CommitUploadPayload: Encodable {
     let type = "appScreenshots"
     let appScreenshotID: String

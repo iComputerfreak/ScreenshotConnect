@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ACPlatform: String, Codable {
+enum ACPlatform: String, Codable, Hashable {
     case iOS = "IOS"
     case tvOS = "TV_OS"
     case macOS = "MAC_OS"

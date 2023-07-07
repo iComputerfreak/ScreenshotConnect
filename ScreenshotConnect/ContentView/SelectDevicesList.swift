@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct SelectDevicesList: View {
-    @Binding var classificationResults: [Result<AppScreenshot, ScreenshotClassifier.Error>]
-    @Binding var selectedDevices: Set<Device>
+    @EnvironmentObject private var viewModel: ContentViewModel
     
     private var screenshotsByDevice: [Device: [AppScreenshot]] {
-        return Dictionary(grouping: classificationResults.compactMap(\.value), by: \.device)
+        return Dictionary(grouping: viewModel.classificationResults.compactMap(\.value), by: \.device)
     }
     
     var body: some View {
@@ -32,12 +31,12 @@ struct SelectDevicesList: View {
     
     private func selectedDevicesProxy(for device: Device) -> Binding<Bool> {
         Binding {
-            selectedDevices.contains(device)
+            viewModel.selectedDevices.contains(device)
         } set: { newValue in
-            if newValue == true, !selectedDevices.contains(device) {
-                selectedDevices.insert(device)
+            if newValue == true, !viewModel.selectedDevices.contains(device) {
+                viewModel.selectedDevices.insert(device)
             } else {
-                selectedDevices.remove(device)
+                viewModel.selectedDevices.remove(device)
             }
         }
     }

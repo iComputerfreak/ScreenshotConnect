@@ -1,5 +1,5 @@
 //
-//  ACStoreVersion.swift
+//  ACAppStoreVersion.swift
 //  ScreenshotConnect
 //
 //  Created by Jonas Frey on 05.06.23.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ACStoreVersion: Decodable {
+struct ACAppStoreVersion: Decodable, Identifiable, Hashable {
     let id: String
     let platform: ACPlatform
     let version: String

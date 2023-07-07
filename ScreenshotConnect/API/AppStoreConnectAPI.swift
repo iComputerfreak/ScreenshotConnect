@@ -77,11 +77,10 @@ actor AppStoreConnectAPI: ObservableObject {
     /// Fetches all existing app store versions of the given app ID.
     /// - Parameter appID: The app ID to fetch versions for
     /// - Returns: All existing app versions
-    func getAppVersions(for appID: String) async throws -> [String] {
-        try await request(APIPath.appStoreVersions(appID: appID), method: .get, as: ResultsWrapper<ACStoreVersion>.self)
+    func getAppStoreVersions(for appID: String) async throws -> [ACAppStoreVersion] {
+        try await request(APIPath.appStoreVersions(appID: appID), method: .get, as: ResultsWrapper<ACAppStoreVersion>.self)
             .data
             .sorted(on: \.creationDate, by: >)
-            .map(\.version)
     }
     
     /// Fetches all existing ``ACLocalization``s for the given app store version.
@@ -181,11 +180,11 @@ actor AppStoreConnectAPI: ObservableObject {
         _ appScreenshot: AppScreenshot,
         in appScreenshotSet: ACAppScreenshotSet
     ) async throws -> ACAppScreenshotReservation {
-        let payload = SingleResultWrapper(data: CreateAppScreenshotReservationPayload(
+        let payload = CreateAppScreenshotReservationPayload(
             fileName: appScreenshot.fileName,
             fileSize: appScreenshot.fileSize,
             screenshotSetID: appScreenshotSet.id
-        ))
+        )
         return try await request(
             APIPath.appScreenshots,
             method: .post,
@@ -201,82 +200,34 @@ actor AppStoreConnectAPI: ObservableObject {
             let end = start + operation.length - 1
             // The chunk to upload in this operation
             let chunk = data[start...end]
-            let result = try await request(
+            // We don't care about the response data
+            _ = try await requestData(
                 url: operation.url,
                 method: .put,
-                as: Data.self, // TODO: ResponseType
                 body: chunk,
                 contentType: .png
             )
         }
-        // TODO: Return something or only throw?
     }
     
-    func commitUpload(of screenshot: AppScreenshot, for appScreenshotID: String) async throws {
+    func commitUpload(of screenshot: AppScreenshot, for appScreenshotID: String) async throws -> ACAppScreenshotReservation {
         let fileData = try Data(contentsOf: screenshot.url)
         let md5 = Insecure.MD5.hash(data: fileData)
         let payload = SingleResultWrapper(data: CommitUploadPayload(
             appScreenshotID: appScreenshotID,
             sourceFileChecksum: md5.description
         ))
-        try await request(
+        let result = try await request(
             APIPath.appScreenshots(for: appScreenshotID),
             method: .patch,
-            as: Data.self, // TODO: What type
+            as: SingleResultWrapper<ACAppScreenshotReservation>.self,
             body: Self.jsonEncoder.encode(payload),
             contentType: .json
         )
-        // TODO: Return
+        return result.data
     }
     
-    private func request<ResponseType: Decodable>(
-        url: URL,
-        method: HTTPMethod,
-        as responseType: ResponseType.Type,
-        queryItems: [String: String?] = [:],
-        headers: [String: String] = [:],
-        body: Data? = nil,
-        contentType: ContentType? = nil
-    ) async throws -> ResponseType {
-        // Append the query items
-        var url = url
-        if !queryItems.isEmpty {
-            url.append(queryItems: queryItems.map(URLQueryItem.init(name:value:)))
-        }
-        
-        // Configure the request
-        var request = URLRequest(url: url)
-        request.httpMethod = method.rawValue
-        for (key, value) in headers {
-            request.addValue(value, forHTTPHeaderField: key)
-        }
-        try request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        request.httpBody = body
-        
-        print("Making a request to \(url.absoluteString): \(request)")
-        
-        // Perform the request
-        let (data, response) = try await URLSession.shared.data(for: request)
-        let responseBody = String(data: data, encoding: .utf8)
-        
-        if let httpResponse = response as? HTTPURLResponse {
-            guard httpResponse.statusCode == 200 else {
-                print("Error: HTTP response returned code \(httpResponse.statusCode)")
-                throw Error.invalidStatusCode(statusCode: httpResponse.statusCode, response: responseBody)
-            }
-        } else {
-            print("Error: Response is not an HTTPURLResponse")
-            print(response)
-            throw Error.invalidResponse
-        }
-        
-        // Decode the response body (if there is any)
-        guard !data.isEmpty else {
-            throw Error.emptyResponseBody
-        }
-        // TODO: We need to detect if the response is instead an error and then throw that error
-        return try Self.jsonDecoder.decode(ResponseType.self, from: data)
-    }
+    // MARK: - Low level request functions
     
     /// Executes an HTTP request to the App Store Connect API.
     ///
@@ -319,6 +270,80 @@ actor AppStoreConnectAPI: ObservableObject {
             body: body,
             contentType: contentType
         )
+    }
+    
+    private func request<ResponseType: Decodable>(
+        url: URL,
+        method: HTTPMethod,
+        as responseType: ResponseType.Type,
+        queryItems: [String: String?] = [:],
+        headers: [String: String] = [:],
+        body: Data? = nil,
+        contentType: ContentType? = nil
+    ) async throws -> ResponseType {
+        let data = try await requestData(
+            url: url,
+            method: method,
+            queryItems: queryItems,
+            headers: headers,
+            body: body,
+            contentType: contentType
+        )
+        
+        // Decode the response body (if there is any)
+        guard !data.isEmpty else {
+            throw Error.emptyResponseBody
+        }
+        // TODO: We need to detect if the response is instead an error and then throw that error
+        return try Self.jsonDecoder.decode(ResponseType.self, from: data)
+    }
+    
+    // Fetches the result, but does not decode it
+    private func requestData(
+        url: URL,
+        method: HTTPMethod,
+        queryItems: [String: String?] = [:],
+        headers: [String: String] = [:],
+        body: Data? = nil,
+        contentType: ContentType? = nil
+    ) async throws -> Data {
+        // Append the query items
+        var url = url
+        if !queryItems.isEmpty {
+            url.append(queryItems: queryItems.map(URLQueryItem.init(name:value:)))
+        }
+        
+        // Configure the request
+        var request = URLRequest(url: url)
+        request.httpMethod = method.rawValue
+        for (key, value) in headers {
+            request.addValue(value, forHTTPHeaderField: key)
+        }
+        try request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.httpBody = body
+        if let contentType {
+            request.addValue(contentType.rawValue, forHTTPHeaderField: "Content-Type")
+        }
+        
+        print("Making a request to \(url.absoluteString): \(request)")
+        
+        // Perform the request
+        let (data, response) = try await URLSession.shared.data(for: request)
+        let responseBody = String(data: data, encoding: .utf8)
+        
+        if let httpResponse = response as? HTTPURLResponse {
+            guard 200...299 ~= httpResponse.statusCode else {
+                print("Error: HTTP response returned code \(httpResponse.statusCode)")
+                print(responseBody ?? "No response body.")
+                throw Error.invalidStatusCode(statusCode: httpResponse.statusCode, response: responseBody)
+            }
+        } else {
+            print("Error: Response is not an HTTPURLResponse")
+            print(response)
+            throw Error.invalidResponse
+        }
+        
+        return data
     }
 }
 

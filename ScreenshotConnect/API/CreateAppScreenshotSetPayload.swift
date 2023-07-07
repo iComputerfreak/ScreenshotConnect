@@ -8,7 +8,8 @@
 import Foundation
 
 struct CreateAppScreenshotSetPayload: Encodable {
-    let type = "appStoreVersionLocalizations"
+    let type = "appScreenshotSets"
+    let relationType = "appStoreVersionLocalizations"
     
     let screenshotDisplayType: ScreenshotDisplayType
     let localization: ACLocalization
@@ -22,12 +23,17 @@ struct CreateAppScreenshotSetPayload: Encodable {
         var rootContainer = encoder.container(keyedBy: RootCodingKeys.self)
         var container = rootContainer.nestedContainer(keyedBy: CodingKeys.self, forKey: .data)
         
+        try container.encode(type, forKey: .type)
+        
         var attributes = container.nestedContainer(keyedBy: AttributeCodingKeys.self, forKey: .attributes)
         try attributes.encode(screenshotDisplayType, forKey: .screenshotDisplayType)
         
-        var relationships = container.nestedContainer(keyedBy: RelationshipCodingKeys.self, forKey: .relationships)
-        try relationships.encode(localization.id, forKey: .id)
-        try relationships.encode(type, forKey: .type)
+        var relationshipsContainer = container.nestedContainer(keyedBy: RelationshipsCodingKeys.self, forKey: .relationships)
+        var rootLocalizationContainer = relationshipsContainer.nestedContainer(keyedBy: AppStoreVersionLocalizationRootCodingKeys.self, forKey: .appStoreVersionLocalization)
+        var localizationContainer = rootLocalizationContainer.nestedContainer(keyedBy: AppStoreVersionLocalizationCodingKeys.self, forKey: .data)
+        
+        try localizationContainer.encode(localization.id, forKey: .id)
+        try localizationContainer.encode(relationType, forKey: .type)
     }
     
     enum RootCodingKeys: CodingKey {
@@ -37,13 +43,22 @@ struct CreateAppScreenshotSetPayload: Encodable {
     enum CodingKeys: CodingKey {
         case attributes
         case relationships
+        case type
     }
     
     enum AttributeCodingKeys: CodingKey {
         case screenshotDisplayType
     }
     
-    enum RelationshipCodingKeys: CodingKey {
+    enum RelationshipsCodingKeys: CodingKey {
+        case appStoreVersionLocalization
+    }
+    
+    enum AppStoreVersionLocalizationRootCodingKeys: CodingKey {
+        case data
+    }
+    
+    enum AppStoreVersionLocalizationCodingKeys: CodingKey {
         case id
         case type
     }

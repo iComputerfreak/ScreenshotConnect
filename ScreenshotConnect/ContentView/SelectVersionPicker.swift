@@ -9,39 +9,37 @@ import SwiftUI
 
 struct SelectVersionPicker: View {
     @EnvironmentObject private var api: AppStoreConnectAPI
-    @Binding var selectedApp: ACApp?
-    @State private var versions: [String] = []
-    @Binding var selectedVersion: String?
+    @EnvironmentObject private var viewModel: ContentViewModel
     
     var body: some View {
-        Picker("Select a version", selection: $selectedVersion) {
+        Picker("Select a version", selection: $viewModel.selectedAppVersion) {
             Text("Select a version...")
-                .tag(nil as String?)
-            ForEach(versions, id: \.self) { version in
-                Text(version)
-                    .tag(version as String?)
+                .tag(nil as ACAppStoreVersion?)
+            ForEach(viewModel.versions.sorted(on: \.version, by: <)) { version in
+                Text(version.version)
+                    .tag(version as ACAppStoreVersion?)
             }
         }
         // Load once on appear (initial app selected)
         .onAppear(perform: loadVersions)
-        .onChange(of: selectedApp) { _ in
+        .onChange(of: viewModel.selectedApp) { _ in
             loadVersions()
         }
     }
     
     func loadVersions() {
-        print("App changed to \(selectedApp?.name ?? "nil")")
-        self.versions = []
-        guard let appID = selectedApp?.id else {
+        print("App changed to \(viewModel.selectedApp?.name ?? "nil")")
+        self.viewModel.versions = []
+        guard let appID = viewModel.selectedApp?.id else {
             print("Deselected an app")
             return
         }
         Task(priority: .userInitiated) {
             do {
-                let versions = try await api.getAppVersions(for: appID)
+                let versions = try await api.getAppStoreVersions(for: appID)
                 await MainActor.run {
-                    print("Setting appVersions to \(versions)")
-                    self.versions = versions
+                    print("Setting appVersions to \(versions.map(\.version))")
+                    self.viewModel.versions = versions
                 }
             } catch {
                 print(error)

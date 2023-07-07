@@ -8,14 +8,13 @@
 import SwiftUI
 
 struct SelectAppPicker: View {
-    @Binding var apps: [ACApp]
-    @Binding var selectedApp: ACApp?
+    @EnvironmentObject private var viewModel: ContentViewModel
     
     var body: some View {
-        Picker("Select an app", selection: $selectedApp.animation()) {
+        Picker("Select an app", selection: $viewModel.selectedApp.animation()) {
             Text("Select an app...")
                 .tag(nil as ACApp?)
-            ForEach(apps.sorted(on: \.name, by: <), id: \.id) { app in
+            ForEach(viewModel.apps.sorted(on: \.name, by: <), id: \.id) { app in
                 Text(app.name)
                     .tag(app as ACApp?)
             }

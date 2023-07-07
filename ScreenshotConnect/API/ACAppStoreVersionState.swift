@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum ACAppStoreVersionState: String, Codable {
+enum ACAppStoreVersionState: String, Codable, Hashable {
     case accepted = "ACCEPTED"
     case developerRemovedFromSale = "DEVELOPER_REMOVED_FROM_SALE"
     case developerRejected = "DEVELOPER_REJECTED"

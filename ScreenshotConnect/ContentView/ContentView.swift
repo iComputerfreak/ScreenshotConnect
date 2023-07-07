@@ -8,16 +8,16 @@
 import SwiftUI
 import JFUtils
 
-struct ContentView: View {
-    @EnvironmentObject private var api: AppStoreConnectAPI
-    
-    @State private var apps: [ACApp] = []
-    @State private var screenshotsURL: URL?
-    @State private var selectedApp: ACApp? = nil
-    @State private var selectedAppVersion: String? = nil
-    @State private var classificationResults: [Result<AppScreenshot, ScreenshotClassifier.Error>] = []
-    @State private var selectedDevices: Set<Device> = []
-    @State private var uploadedScreenshots: Int = 0
+class ContentViewModel: ObservableObject {
+    @Published var apps: [ACApp] = []
+    @Published var screenshotsURL: URL?
+    @Published var selectedApp: ACApp?
+    @Published var selectedAppVersion: ACAppStoreVersion?
+    @Published var classificationResults: [Result<AppScreenshot, ScreenshotClassifier.Error>] = []
+    @Published var selectedDevices: Set<Device> = []
+    @Published var uploadedScreenshots: Int = 0
+    @Published var versions: [ACAppStoreVersion] = []
+    @Published var isUploading: Bool = false
     
     var screenshots: [AppScreenshot] {
         classificationResults.compactMap(\.value)
@@ -35,28 +35,34 @@ struct ContentView: View {
             selectedDevices.contains(screenshot.device)
         }
     }
+}
+
+struct ContentView: View {
+    @EnvironmentObject private var api: AppStoreConnectAPI
+    
+    @StateObject private var viewModel = ContentViewModel()
     
     var body: some View {
         Form {
             Section("Select Screenshots") {
-                SelectScreenshotsButton(screenshotsURL: $screenshotsURL, classificationResults: $classificationResults, selectedDevices: $selectedDevices)
-                if !screenshots.isEmpty {
-                    Text("Found \(screenshots.count) screenshots for \(Set(screenshots.compactMap(\.locale)).count) locales.")
+                SelectScreenshotsButton()
+                if !viewModel.screenshots.isEmpty {
+                    Text("Found \(viewModel.screenshots.count) screenshots for \(Set(viewModel.screenshots.compactMap(\.locale)).count) locales.")
                 }
-                let missingLocaleCount = screenshots.filter({ $0.locale == nil }).count
+                let missingLocaleCount = viewModel.screenshots.filter({ $0.locale == nil }).count
                 if missingLocaleCount > 0 {
                     Text("\(missingLocaleCount) screenshots don't have a locale. Please put them in subdirectories named after their locale (e.g. 'en-US')")
                 }
             }
             Section("Detected Devices") {
-                SelectDevicesList(classificationResults: $classificationResults, selectedDevices: $selectedDevices)
+                SelectDevicesList()
             }
             Section("Select App") {
-                SelectAppPicker(apps: $apps, selectedApp: $selectedApp)
-                if selectedApp != nil {
-                    SelectVersionPicker(selectedApp: $selectedApp, selectedVersion: $selectedAppVersion)
-                    AppInfoView(app: $selectedApp)
-                        .animation(nil, value: selectedApp)
+                SelectAppPicker()
+                if viewModel.selectedApp != nil {
+                    SelectVersionPicker()
+                    AppInfoView()
+                        .animation(nil, value: viewModel.selectedApp)
                 }
             }
             VStack {
@@ -65,18 +71,21 @@ struct ContentView: View {
                     UploadButton()
                     Spacer()
                 }
-                ProgressView(value: Double(uploadedScreenshots), total: Double(screenshotsToUpload.count)) {
-                    Text("Uploading screenshots...")
-                } currentValueLabel: {
-                    Text("\(uploadedScreenshots) / \(screenshotsToUpload.count)")
+                if viewModel.isUploading {
+                    ProgressView(value: Double(viewModel.uploadedScreenshots), total: Double(viewModel.screenshotsToUpload.count)) {
+                        Text("Uploading screenshots...")
+                    } currentValueLabel: {
+                        Text("\(viewModel.uploadedScreenshots) / \(viewModel.screenshotsToUpload.count)")
+                    }
                 }
             }
         }
         .formStyle(.grouped)
         .task {
-            apps = (try? await api.getApps()) ?? []
+            viewModel.apps = (try? await api.getApps()) ?? []
         }
         .padding()
+        .environmentObject(viewModel)
     }
 }
 
