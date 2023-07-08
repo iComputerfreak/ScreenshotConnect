@@ -14,6 +14,7 @@ import CryptoKit
 actor AppStoreConnectAPI: ObservableObject {
     private static let jsonDecoder = JSONDecoder()
     private static let jsonEncoder = JSONEncoder()
+    private static let apiHost = "api.appstoreconnect.apple.com"
     
     private var issuerID: String
     private var privateKeyID: String
@@ -102,7 +103,7 @@ actor AppStoreConnectAPI: ObservableObject {
     /// - Returns: All existing ``ACAppScreenshotSet``s matching the given localization
     func getScreenshotSets(for localization: ACLocalization) async throws -> [ACAppScreenshotSet] {
         var sets = try await request(
-            APIPath.appScreenshotSets(for: localization.id),
+            APIPath.appScreenshotSets(localization: localization.id),
             method: .get,
             as: ResultsWrapper<ACAppScreenshotSet>.self
         )
@@ -202,6 +203,10 @@ actor AppStoreConnectAPI: ObservableObject {
         ).data
     }
     
+    func deleteAppScreenshotSet(_ screenshotSetID: String) async throws {
+        _ = try await requestData(APIPath.appScreenshotSets(id: screenshotSetID), method: .delete)
+    }
+    
     func uploadData(_ data: Data, for reservation: ACAppScreenshotReservation) async throws {
         for operation in reservation.uploadOperations {
             let start = operation.offset
@@ -234,9 +239,27 @@ actor AppStoreConnectAPI: ObservableObject {
         )
         return result.data
     }
-    
-    // MARK: - Low level request functions
-    
+}
+
+// MARK: - Build URL
+
+fileprivate extension AppStoreConnectAPI {
+    func buildURL(for path: String) throws -> URL {
+        var urlComponents = URLComponents()
+        urlComponents.scheme = "https"
+        urlComponents.host = Self.apiHost
+        urlComponents.path = path
+        // Don't append the queryItems, as that is done later
+        guard let url = urlComponents.url else {
+            throw Error.invalidURLComponents
+        }
+        return url
+    }
+}
+
+// MARK: - Request and Decode
+// Fetch and decode the request
+fileprivate extension AppStoreConnectAPI {
     /// Executes an HTTP request to the App Store Connect API.
     ///
     ///     let result = try await request(.apps, method: .get, as: ResultWrapper<ACApp>.self)
@@ -259,18 +282,8 @@ actor AppStoreConnectAPI: ObservableObject {
         body: Data? = nil,
         contentType: ContentType? = nil
     ) async throws -> ResponseType {
-        // Build the URL
-        var urlComponents = URLComponents()
-        urlComponents.scheme = "https"
-        urlComponents.host = "api.appstoreconnect.apple.com"
-        urlComponents.path = path
-        // Don't append the queryItems, as that is done later
-        guard let url = urlComponents.url else {
-            throw Error.invalidURLComponents
-        }
-        
-        return try await request(
-            url: url,
+        try await request(
+            url: buildURL(for: path),
             method: method,
             as: responseType,
             queryItems: queryItems,
@@ -305,8 +318,29 @@ actor AppStoreConnectAPI: ObservableObject {
         // TODO: We need to detect if the response is instead an error and then throw that error
         return try Self.jsonDecoder.decode(ResponseType.self, from: data)
     }
+}
+
+// MARK: - Request Data
+// Fetch the results, but don't decode them
+fileprivate extension AppStoreConnectAPI {
+    private func requestData(
+        _ path: String,
+        method: HTTPMethod,
+        queryItems: [String: String?] = [:],
+        headers: [String: String] = [:],
+        body: Data? = nil,
+        contentType: ContentType? = nil
+    ) async throws -> Data {
+        try await requestData(
+            url: buildURL(for: path),
+            method: method,
+            queryItems: queryItems,
+            headers: headers,
+            body: body,
+            contentType: contentType
+        )
+    }
     
-    // Fetches the result, but does not decode it
     private func requestData(
         url: URL,
         method: HTTPMethod,
@@ -333,7 +367,7 @@ actor AppStoreConnectAPI: ObservableObject {
             request.addValue(contentType.rawValue, forHTTPHeaderField: "Content-Type")
         }
         
-        print("Making a request to \(url.absoluteString): \(request)")
+        print("Making a \(method.rawValue.uppercased()) request to \(url.absoluteString): \(request)")
         
         // Perform the request
         let (data, response) = try await URLSession.shared.data(for: request)
@@ -352,51 +386,5 @@ actor AppStoreConnectAPI: ObservableObject {
         }
         
         return data
-    }
-}
-
-extension AppStoreConnectAPI {
-    enum APIPath {
-        static let apps = "/v1/apps"
-        static let appScreenshotSets = "/v1/appScreenshotSets"
-        static func appScreenshotSets(for localizationID: String) -> String {
-            "/v1/appStoreVersionLocalizations/\(localizationID)/appScreenshotSets"
-        }
-        static func appBuilds(appID: String) -> String { "/v1/apps/\(appID)/builds" }
-        static func appStoreVersions(appID: String) -> String { "/v1/apps/\(appID)/appStoreVersions" }
-        static func appStoreVersionLocalizations(appStoreVersionID: String) -> String {
-            "/v1/appStoreVersions/\(appStoreVersionID)/appStoreVersionLocalizations"
-        }
-        static let appScreenshots = "/v1/appScreenshots"
-        static func appScreenshots(for appScreenshotID: String) -> String {
-            appScreenshots + "/\(appScreenshotID)"
-        }
-    }
-    
-    enum ContentType: String {
-        case png = "image/png"
-        case json = "application/json"
-    }
-    
-    enum HTTPMethod: String {
-        case get = "GET"
-        case post = "POST"
-        case put = "PUT"
-        case patch = "PATCH"
-        case delete = "DELETE"
-    }
-    
-    enum Error: Swift.Error {
-        case invalidURLComponents
-        case invalidStatusCode(statusCode: Int, response: String?)
-        case invalidResponse
-        case emptyResponseBody
-        case missingPrivateKey
-    }
-    
-    struct JWTClaims: Claims {
-        let iss: String
-        let exp: Int
-        let aud: String
     }
 }

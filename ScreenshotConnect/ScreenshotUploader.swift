@@ -29,6 +29,7 @@ class ScreenshotUploader {
     ) async throws {
         let appStoreVersionID = appStoreVersion.id
         let localizations = try await api.getLocalizations(for: appStoreVersionID)
+        
         // We need to make sure that all given localizations exist on App Store Connect:
         let screenshotLocales = screenshots.compactMap(\.locale)
         let existingLocales = localizations.map(\.locale)
@@ -39,6 +40,13 @@ class ScreenshotUploader {
             guard existingLocales.contains(locale) else {
                 throw Error.unknownLocale(locale: locale)
             }
+        }
+        
+        // Fetch all existing screenshot sets for the existing localizations
+        var existingScreenshotSets: [ACAppScreenshotSet] = []
+        for localization in localizations {
+            let sets = try await api.getScreenshotSets(for: localization)
+            existingScreenshotSets.append(contentsOf: sets)
         }
         
         // Each screenshot needs a screenshot set
@@ -52,8 +60,18 @@ class ScreenshotUploader {
                 // We already have a matching set, append the screenshot
                 screenshotSets[set]!.append(screenshot)
             } else {
-                // Get or create the matching screenshot set
-                let set = try await api.getOrCreateScreenshotSet(
+                // If there already exists a screenshot set
+                if let index = existingScreenshotSets.firstIndex(where: { set in
+                    set.screenshotDisplayType == screenshot.device.screenshotDisplayType &&
+                    set.locale == screenshot.locale
+                }) {
+                    // Delete it
+                    try await api.deleteAppScreenshotSet(existingScreenshotSets[index].id)
+                    existingScreenshotSets.remove(at: index)
+                }
+                
+                // Create a new screenshot set
+                let set = try await api.createScreenshotSet(
                     for: localizations.first(where: { $0.locale == screenshot.locale })!,
                     screenshotDisplayType: screenshot.device.screenshotDisplayType
                 )
@@ -63,7 +81,6 @@ class ScreenshotUploader {
         
         // At this point, we fetched the correct screenshot set for each screenshot
         print("Uploading \(screenshotSets.count) screenshot sets")
-        let totalScreenshotCount = screenshotSets.map(\.value).joined().count
         // The amount of uploaded screenshots (excluding the ones from the currently uploading set)
         var uploadedCount = 0
         for (set, screenshots) in screenshotSets {
