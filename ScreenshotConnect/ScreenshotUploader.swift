@@ -95,9 +95,9 @@ class ScreenshotUploader {
         onProgress?(.uploadingScreenshots(current: 1, total: screenshots.count))
         // The number of the screenshot we are currently trying to upload
         var currentScreenshot = 1
-        for (set, screenshots) in screenshotSets {
+        for (set, setScreenshots) in screenshotSets {
             // Upload the screenshots as part of the set
-            try await api.uploadScreenshots(screenshots, to: set) { _ in
+            try await api.uploadScreenshots(setScreenshots, to: set) { _ in
                 // Every time a screenshot is uploaded, increase the progress
                 currentScreenshot += 1
                 onProgress?(.uploadingScreenshots(current: currentScreenshot, total: screenshots.count))

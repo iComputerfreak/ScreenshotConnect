@@ -367,7 +367,7 @@ fileprivate extension AppStoreConnectAPI {
             request.addValue(contentType.rawValue, forHTTPHeaderField: "Content-Type")
         }
         
-        print("Making a \(method.rawValue.uppercased()) request to \(url.absoluteString): \(request)")
+        print("Making a \(method.rawValue.uppercased()) request to \(url.absoluteString)...")
         
         // Perform the request
         let (data, response) = try await URLSession.shared.data(for: request)

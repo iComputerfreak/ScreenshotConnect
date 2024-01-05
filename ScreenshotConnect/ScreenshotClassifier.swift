@@ -36,7 +36,7 @@ struct ScreenshotClassifier {
         let resourceKeys: Set<URLResourceKey> = [.nameKey, .isDirectoryKey, .fileSizeKey, .contentTypeKey]
         
         guard let directoryEnumerator = FileManager.default.enumerator(
-            at: directory,
+            at: directory.resolvingSymlinksInPath(),
             includingPropertiesForKeys: Array(resourceKeys),
             options: .skipsHiddenFiles
         ) else {

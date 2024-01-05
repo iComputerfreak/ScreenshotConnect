@@ -22,7 +22,9 @@ struct UploadProgressView: View {
     }
     
     var body: some View {
-        if viewModel.isUploading {
+        if case UploadState.idle = viewModel.uploadState {
+            // We don't show any progress in idle state
+        } else {
             ProgressView(value: progressPercentage) {
                 Text(viewModel.uploadState.localized)
             } currentValueLabel: {

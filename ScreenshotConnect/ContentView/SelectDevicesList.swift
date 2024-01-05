@@ -15,14 +15,18 @@ struct SelectDevicesList: View {
     }
     
     var body: some View {
-        List {
-            ForEach(Array(screenshotsByDevice.keys.sorted(on: \.name, by: <)), id: \.name) { device in
-                let screenshotCount = screenshotsByDevice[device]?.count ?? 0
-                Toggle(isOn: selectedDevicesProxy(for: device)) {
-                    HStack {
-                        Text(device.name)
-                        Spacer()
-                        Text("\(screenshotCount) screenshots")
+        if screenshotsByDevice.isEmpty {
+            Text("No Screenshots detected.")
+        } else {
+            List {
+                ForEach(Array(screenshotsByDevice.keys.sorted(on: \.name, by: <)), id: \.name) { device in
+                    let screenshotCount = screenshotsByDevice[device]?.count ?? 0
+                    Toggle(isOn: selectedDevicesProxy(for: device)) {
+                        HStack {
+                            Text(device.name)
+                            Spacer()
+                            Text("\(screenshotCount) screenshots")
+                        }
                     }
                 }
             }
