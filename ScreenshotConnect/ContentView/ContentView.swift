@@ -8,39 +8,21 @@
 import SwiftUI
 import JFUtils
 
-class ContentViewModel: ObservableObject {
-    @Published var apps: [ACApp] = []
-    @Published var screenshotsURL: URL?
-    @Published var selectedApp: ACApp?
-    @Published var selectedAppVersion: ACAppStoreVersion?
-    @Published var classificationResults: [Result<AppScreenshot, ScreenshotClassifier.Error>] = []
-    @Published var selectedDevices: Set<Device> = []
-    @Published var uploadedScreenshots: Int = 0
-    @Published var versions: [ACAppStoreVersion] = []
-    @Published var isUploading: Bool = false
+struct ContentView: View {
+    @EnvironmentObject private var viewModel: ContentViewModel
     
-    var screenshots: [AppScreenshot] {
-        classificationResults.compactMap(\.value)
-    }
-    
-    var classificationErrors: [ScreenshotClassifier.Error] {
-        classificationResults
-            .compactMap { result in
-                result.error as? ScreenshotClassifier.Error
+    var showingError: Binding<Bool> {
+        .init {
+            viewModel.uploadError != nil
+        } set: { newValue in
+            // If we want to hide the error, set it to nil
+            if newValue == false {
+                viewModel.uploadState = .idle
             }
-    }
-    
-    var screenshotsToUpload: [AppScreenshot] {
-        screenshots.filter { screenshot in
-            selectedDevices.contains(screenshot.device)
+            // Showing the error by setting this binding to true is not supported.
+            // We need an error to display
         }
     }
-}
-
-struct ContentView: View {
-    @EnvironmentObject private var api: AppStoreConnectAPI
-    
-    @StateObject private var viewModel = ContentViewModel()
     
     var body: some View {
         Form {
@@ -71,27 +53,29 @@ struct ContentView: View {
                     UploadButton()
                     Spacer()
                 }
-                if viewModel.isUploading {
-                    ProgressView(value: Double(viewModel.uploadedScreenshots), total: Double(viewModel.screenshotsToUpload.count)) {
-                        Text("Uploading screenshots...")
-                    } currentValueLabel: {
-                        Text("\(viewModel.uploadedScreenshots) / \(viewModel.screenshotsToUpload.count)")
-                    }
-                }
+                UploadProgressView()
             }
         }
+        .alert("Error", isPresented: showingError, presenting: viewModel.uploadError, actions: { error in
+            if let acError = error as? ACErrorResponse.ACError {
+                Text(acError.title).bold()
+                Text(acError.detail)
+            } else {
+                Text(error.localizedDescription)
+            }
+        })
         .formStyle(.grouped)
         .task {
-            viewModel.apps = (try? await api.getApps()) ?? []
+            await viewModel.fetchApps()
         }
         .padding()
         .environmentObject(viewModel)
     }
 }
 
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-            .frame(height: 500)
-    }
-}
+//struct ContentView_Previews: PreviewProvider {
+//    static var previews: some View {
+//        ContentView()
+//            .frame(height: 500)
+//    }
+//}

@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct UploadButton: View {
-    @EnvironmentObject private var api: AppStoreConnectAPI
     @EnvironmentObject private var viewModel: ContentViewModel
     
     var body: some View {
@@ -21,21 +20,18 @@ struct UploadButton: View {
             }
             Task(priority: .high) {
                 do {
-                    await MainActor.run {
-                        viewModel.isUploading = true
-                    }
-                    let uploader = ScreenshotUploader(api: api)
-                    try await uploader.upload(viewModel.screenshotsToUpload, to: selectedVersion) { progress in
+                    let uploader = ScreenshotUploader(api: viewModel.api)
+                    try await uploader.upload(viewModel.screenshotsToUpload, to: selectedVersion) { uploadState in
                         // When the progress changes, update the view model
                         DispatchQueue.main.async {
-                            viewModel.uploadedScreenshots = progress
+                            viewModel.uploadState = uploadState
                         }
                     }
                 } catch {
                     print(error)
-                }
-                await MainActor.run {
-                    viewModel.isUploading = false
+                    await MainActor.run {
+                        viewModel.uploadState = .error(error)
+                    }
                 }
             }
         } label: {

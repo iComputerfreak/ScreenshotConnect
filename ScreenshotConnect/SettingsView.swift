@@ -17,6 +17,8 @@ struct SettingsView: View {
     
     @Preference(\.devices) private var devices
     
+    @EnvironmentObject private var contentViewModel: ContentViewModel
+    
     @State private var showingPrivateKeyImporter = false
     @State private var showingPrivateKeyError = false
     
@@ -45,6 +47,10 @@ struct SettingsView: View {
                     if let url = result.value {
                         do {
                             self.privateKey = try Data(contentsOf: url)
+                            // Re-fetch the apps
+                            Task(priority: .userInitiated) {
+                                await contentViewModel.fetchApps()
+                            }
                         } catch {
                             print(error)
                             showingPrivateKeyError = true

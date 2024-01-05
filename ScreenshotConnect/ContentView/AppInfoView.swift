@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct AppInfoView: View {
-    @EnvironmentObject private var api: AppStoreConnectAPI
     @EnvironmentObject private var viewModel: ContentViewModel
     
     @State private var appIconURL: URL? = nil
@@ -47,7 +46,7 @@ struct AppInfoView: View {
         // Use two tasks to perform the two calls concurrently
         Task(priority: .userInitiated) {
             do {
-                let url = try await api.getAppIcon(for: appID)
+                let url = try await viewModel.api.getAppIcon(for: appID)
                 await MainActor.run {
                     print("Setting appIconURL to \(url?.absoluteString ?? "nil")")
                     self.appIconURL = url

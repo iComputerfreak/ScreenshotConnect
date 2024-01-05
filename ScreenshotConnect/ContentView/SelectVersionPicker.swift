@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct SelectVersionPicker: View {
-    @EnvironmentObject private var api: AppStoreConnectAPI
     @EnvironmentObject private var viewModel: ContentViewModel
     
     var body: some View {
@@ -36,7 +35,7 @@ struct SelectVersionPicker: View {
         }
         Task(priority: .userInitiated) {
             do {
-                let versions = try await api.getAppStoreVersions(for: appID)
+                let versions = try await viewModel.api.getAppStoreVersions(for: appID)
                 await MainActor.run {
                     print("Setting appVersions to \(versions.map(\.version))")
                     self.viewModel.versions = versions

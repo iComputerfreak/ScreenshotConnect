@@ -16,7 +16,8 @@ struct CommitUploadPayload: Encodable {
     let sourceFileChecksum: String
     
     func encode(to encoder: Encoder) throws {
-        var container = encoder.container(keyedBy: RootCodingKeys.self)
+        var rootContainer = encoder.container(keyedBy: RootCodingKeys.self)
+        var container = rootContainer.nestedContainer(keyedBy: DataCodingKeys.self, forKey: .data)
         try container.encode(type, forKey: .type)
         try container.encode(appScreenshotID, forKey: .id)
         var attributesContainer = container.nestedContainer(keyedBy: AttributesCodingKey.self, forKey: .attributes)
@@ -25,6 +26,10 @@ struct CommitUploadPayload: Encodable {
     }
     
     enum RootCodingKeys: CodingKey {
+        case data
+    }
+    
+    enum DataCodingKeys: CodingKey {
         case type
         case id
         case attributes

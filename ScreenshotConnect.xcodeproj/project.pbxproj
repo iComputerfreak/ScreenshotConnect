@@ -7,13 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB1805032A69823D00245BE9 /* ACErrorResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1805022A69823D00245BE9 /* ACErrorResponse.swift */; };
 		AB49147C2A3CB888004BE6DE /* ACAppScreenshotReservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB49147B2A3CB888004BE6DE /* ACAppScreenshotReservation.swift */; };
 		AB49147E2A3CB927004BE6DE /* ACAppScreenshotUploadOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB49147D2A3CB927004BE6DE /* ACAppScreenshotUploadOperation.swift */; };
 		AB4914802A3CBABB004BE6DE /* ACRequestHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB49147F2A3CBABB004BE6DE /* ACRequestHeader.swift */; };
 		AB4914822A3CBB82004BE6DE /* ACAssetDeliveryState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4914812A3CBB82004BE6DE /* ACAssetDeliveryState.swift */; };
 		AB4914842A3CBCC9004BE6DE /* ACAppMediaStateError.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4914832A3CBCC9004BE6DE /* ACAppMediaStateError.swift */; };
 		AB4914862A3CBDA1004BE6DE /* CreateAppScreenshotReservationPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4914852A3CBDA1004BE6DE /* CreateAppScreenshotReservationPayload.swift */; };
+		AB58A8BF2AAE00FD00F7B012 /* UploadState.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB58A8BE2AAE00FD00F7B012 /* UploadState.swift */; };
+		AB58A8C12AAE030F00F7B012 /* UploadProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB58A8C02AAE030F00F7B012 /* UploadProgressView.swift */; };
 		AB7F383F2A58D2C900C297E4 /* API Helper Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7F383E2A58D2C900C297E4 /* API Helper Types.swift */; };
+		AB7F38412A5993D400C297E4 /* ContentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7F38402A5993D400C297E4 /* ContentViewModel.swift */; };
 		ABB9F7AD2A58589A00B23E5F /* CommitUploadPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABB9F7AC2A58589A00B23E5F /* CommitUploadPayload.swift */; };
 		ABCEF1372A293C5800295EB6 /* ScreenshotConnectApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABCEF1362A293C5800295EB6 /* ScreenshotConnectApp.swift */; };
 		ABCEF1392A293C5800295EB6 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABCEF1382A293C5800295EB6 /* ContentView.swift */; };
@@ -52,13 +56,17 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AB1805022A69823D00245BE9 /* ACErrorResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACErrorResponse.swift; sourceTree = "<group>"; };
 		AB49147B2A3CB888004BE6DE /* ACAppScreenshotReservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACAppScreenshotReservation.swift; sourceTree = "<group>"; };
 		AB49147D2A3CB927004BE6DE /* ACAppScreenshotUploadOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACAppScreenshotUploadOperation.swift; sourceTree = "<group>"; };
 		AB49147F2A3CBABB004BE6DE /* ACRequestHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACRequestHeader.swift; sourceTree = "<group>"; };
 		AB4914812A3CBB82004BE6DE /* ACAssetDeliveryState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACAssetDeliveryState.swift; sourceTree = "<group>"; };
 		AB4914832A3CBCC9004BE6DE /* ACAppMediaStateError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ACAppMediaStateError.swift; sourceTree = "<group>"; };
 		AB4914852A3CBDA1004BE6DE /* CreateAppScreenshotReservationPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAppScreenshotReservationPayload.swift; sourceTree = "<group>"; };
+		AB58A8BE2AAE00FD00F7B012 /* UploadState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadState.swift; sourceTree = "<group>"; };
+		AB58A8C02AAE030F00F7B012 /* UploadProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadProgressView.swift; sourceTree = "<group>"; };
 		AB7F383E2A58D2C900C297E4 /* API Helper Types.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "API Helper Types.swift"; sourceTree = "<group>"; };
+		AB7F38402A5993D400C297E4 /* ContentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewModel.swift; sourceTree = "<group>"; };
 		ABB9F7AC2A58589A00B23E5F /* CommitUploadPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommitUploadPayload.swift; sourceTree = "<group>"; };
 		ABCEF1332A293C5800295EB6 /* ScreenshotConnect.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ScreenshotConnect.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABCEF1362A293C5800295EB6 /* ScreenshotConnectApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenshotConnectApp.swift; sourceTree = "<group>"; };
@@ -129,6 +137,7 @@
 				AB4914812A3CBB82004BE6DE /* ACAssetDeliveryState.swift */,
 				AB4914832A3CBCC9004BE6DE /* ACAppMediaStateError.swift */,
 				ABB9F7AC2A58589A00B23E5F /* CommitUploadPayload.swift */,
+				AB1805022A69823D00245BE9 /* ACErrorResponse.swift */,
 			);
 			path = "API Structs";
 			sourceTree = "<group>";
@@ -182,12 +191,15 @@
 			isa = PBXGroup;
 			children = (
 				ABCEF1382A293C5800295EB6 /* ContentView.swift */,
+				AB7F38402A5993D400C297E4 /* ContentViewModel.swift */,
+				AB58A8BE2AAE00FD00F7B012 /* UploadState.swift */,
 				ABD1BE992A30B64000381AE8 /* SelectScreenshotsButton.swift */,
 				ABD1BE9B2A30B68A00381AE8 /* SelectDevicesList.swift */,
 				ABD1BE9D2A30B70900381AE8 /* SelectAppPicker.swift */,
 				ABD1BE9F2A30B75D00381AE8 /* SelectVersionPicker.swift */,
 				ABD1BEA12A30BB3400381AE8 /* AppInfoView.swift */,
 				ABD1BEA32A30BEAC00381AE8 /* UploadButton.swift */,
+				AB58A8C02AAE030F00F7B012 /* UploadProgressView.swift */,
 			);
 			path = ContentView;
 			sourceTree = "<group>";
@@ -294,6 +306,7 @@
 			files = (
 				ABFF57142A2E0D620069C243 /* PublisherObservableObject.swift in Sources */,
 				ABFF56FA2A2A32920069C243 /* ResultsWrapper.swift in Sources */,
+				AB58A8BF2AAE00FD00F7B012 /* UploadState.swift in Sources */,
 				AB49147C2A3CB888004BE6DE /* ACAppScreenshotReservation.swift in Sources */,
 				AB4914822A3CBB82004BE6DE /* ACAssetDeliveryState.swift in Sources */,
 				ABFF570B2A2B8B7B0069C243 /* ScreenshotDisplayType.swift in Sources */,
@@ -304,11 +317,13 @@
 				ABFF56FF2A2A590F0069C243 /* AppScreenshot.swift in Sources */,
 				ABFF56F22A2A0E5B0069C243 /* AppStoreConnectAPI.swift in Sources */,
 				AB4914842A3CBCC9004BE6DE /* ACAppMediaStateError.swift in Sources */,
+				AB7F38412A5993D400C297E4 /* ContentViewModel.swift in Sources */,
 				AB4914862A3CBDA1004BE6DE /* CreateAppScreenshotReservationPayload.swift in Sources */,
 				AB7F383F2A58D2C900C297E4 /* API Helper Types.swift in Sources */,
 				ABCEF1372A293C5800295EB6 /* ScreenshotConnectApp.swift in Sources */,
 				ABD1BEAA2A311E8200381AE8 /* CreateAppScreenshotSetPayload.swift in Sources */,
 				ABFF570E2A2E0CFA0069C243 /* Preferences.swift in Sources */,
+				AB58A8C12AAE030F00F7B012 /* UploadProgressView.swift in Sources */,
 				ABD1BEA02A30B75D00381AE8 /* SelectVersionPicker.swift in Sources */,
 				ABFF57182A2E126B0069C243 /* ACPlatform.swift in Sources */,
 				ABD1BEA22A30BB3400381AE8 /* AppInfoView.swift in Sources */,
@@ -318,6 +333,7 @@
 				ABD1BE9C2A30B68A00381AE8 /* SelectDevicesList.swift in Sources */,
 				ABFF57162A2E11290069C243 /* ACAppStoreVersion.swift in Sources */,
 				ABB9F7AD2A58589A00B23E5F /* CommitUploadPayload.swift in Sources */,
+				AB1805032A69823D00245BE9 /* ACErrorResponse.swift in Sources */,
 				ABD1BEAC2A33C25200381AE8 /* SingleResultWrapper.swift in Sources */,
 				ABD1BEA62A31186D00381AE8 /* ACLocalization.swift in Sources */,
 				ABFF56F82A2A11CA0069C243 /* ACApp.swift in Sources */,

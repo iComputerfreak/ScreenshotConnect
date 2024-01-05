@@ -15,21 +15,28 @@ class ScreenshotUploader {
         self.api = api
     }
     
-    func upload(_ screenshots: [AppScreenshot], to app: ACApp, version: String) async throws {
+    func upload(
+        _ screenshots: [AppScreenshot],
+        to app: ACApp,
+        version: String,
+        onProgress: ((UploadState) -> Void)? = nil
+    ) async throws {
         guard let version = try await api.getAppStoreVersions(for: app.id).first(where: \.version, equals: version) else {
             throw Error.unknownVersion
         }
-        try await upload(screenshots, to: version)
+        try await upload(screenshots, to: version, onProgress: onProgress)
     }
     
     func upload(
         _ screenshots: [AppScreenshot],
         to appStoreVersion: ACAppStoreVersion,
-        onProgress: ((Int) -> Void)? = nil
+        onProgress: ((UploadState) -> Void)? = nil
     ) async throws {
+        onProgress?(.preparing)
         let appStoreVersionID = appStoreVersion.id
         let localizations = try await api.getLocalizations(for: appStoreVersionID)
         
+        // MARK: Match Locales
         // We need to make sure that all given localizations exist on App Store Connect:
         let screenshotLocales = screenshots.compactMap(\.locale)
         let existingLocales = localizations.map(\.locale)
@@ -42,6 +49,7 @@ class ScreenshotUploader {
             }
         }
         
+        // MARK: Fetch Existing Screenshots
         // Fetch all existing screenshot sets for the existing localizations
         var existingScreenshotSets: [ACAppScreenshotSet] = []
         for localization in localizations {
@@ -52,6 +60,8 @@ class ScreenshotUploader {
         // Each screenshot needs a screenshot set
         var screenshotSets: [ACAppScreenshotSet: [AppScreenshot]] = [:]
         
+        onProgress?(.deletingExisting)
+        // MARK: Assign Screenshots to Sets
         for screenshot in screenshots {
             if let set = screenshotSets.keys.first(where: { set in
                 set.screenshotDisplayType == screenshot.device.screenshotDisplayType &&
@@ -60,6 +70,7 @@ class ScreenshotUploader {
                 // We already have a matching set, append the screenshot
                 screenshotSets[set]!.append(screenshot)
             } else {
+                // MARK: Delete Existing Screenshot Sets on AppStoreConnect
                 // If there already exists a screenshot set
                 if let index = existingScreenshotSets.firstIndex(where: { set in
                     set.screenshotDisplayType == screenshot.device.screenshotDisplayType &&
@@ -81,16 +92,18 @@ class ScreenshotUploader {
         
         // At this point, we fetched the correct screenshot set for each screenshot
         print("Uploading \(screenshotSets.count) screenshot sets")
-        // The amount of uploaded screenshots (excluding the ones from the currently uploading set)
-        var uploadedCount = 0
+        onProgress?(.uploadingScreenshots(current: 1, total: screenshots.count))
+        // The number of the screenshot we are currently trying to upload
+        var currentScreenshot = 1
         for (set, screenshots) in screenshotSets {
             // Upload the screenshots as part of the set
             try await api.uploadScreenshots(screenshots, to: set) { _ in
                 // Every time a screenshot is uploaded, increase the progress
-                uploadedCount += 1
-                onProgress?(uploadedCount)
+                currentScreenshot += 1
+                onProgress?(.uploadingScreenshots(current: currentScreenshot, total: screenshots.count))
             }
         }
+        onProgress?(.uploadSuccessful)
     }
     
     enum Error: Swift.Error {

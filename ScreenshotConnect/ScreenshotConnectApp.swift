@@ -9,21 +9,16 @@ import SwiftUI
 
 @main
 struct ScreenshotConnectApp: App {
-    @Preference(\.issuerID) private var issuerID
-    @Preference(\.privateKeyID) private var privateKeyID
-    @Preference(\.privateKey) private var privateKey
+    @StateObject private var contentViewModel = ContentViewModel()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environmentObject(AppStoreConnectAPI(
-                    issuerID: issuerID,
-                    privateKeyID: privateKeyID,
-                    privateKey: privateKey
-                ))
+                .environmentObject(contentViewModel)
         }
         Settings {
             SettingsView()
+                .environmentObject(contentViewModel)
         }
     }
 }

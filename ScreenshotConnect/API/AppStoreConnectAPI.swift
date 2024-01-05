@@ -226,10 +226,10 @@ actor AppStoreConnectAPI: ObservableObject {
     func commitUpload(of screenshot: AppScreenshot, for appScreenshotID: String) async throws -> ACAppScreenshotReservation {
         let fileData = try Data(contentsOf: screenshot.url)
         let md5 = Insecure.MD5.hash(data: fileData)
-        let payload = SingleResultWrapper(data: CommitUploadPayload(
+        let payload = CommitUploadPayload(
             appScreenshotID: appScreenshotID,
             sourceFileChecksum: md5.description
-        ))
+        )
         let result = try await request(
             APIPath.appScreenshots(for: appScreenshotID),
             method: .patch,
@@ -371,20 +371,47 @@ fileprivate extension AppStoreConnectAPI {
         
         // Perform the request
         let (data, response) = try await URLSession.shared.data(for: request)
-        let responseBody = String(data: data, encoding: .utf8)
         
+        // Handle any potential errors
+        try checkForError(response: response, data: data)
+        
+        return data
+    }
+    
+    // Checks if the response returned an error and throws the error
+    // Returns normally otherwise
+    private func checkForError(response: URLResponse, data: Data) throws {
         if let httpResponse = response as? HTTPURLResponse {
-            guard 200...299 ~= httpResponse.statusCode else {
-                print("Error: HTTP response returned code \(httpResponse.statusCode)")
-                print(responseBody ?? "No response body.")
-                throw Error.invalidStatusCode(statusCode: httpResponse.statusCode, response: responseBody)
+            // HTTP code should be in 2xx range
+            if !(200...299 ~= httpResponse.statusCode) {
+                try handleErrorResponse(for: httpResponse, data: data)
             }
         } else {
             print("Error: Response is not an HTTPURLResponse")
             print(response)
             throw Error.invalidResponse
         }
-        
-        return data
+    }
+    
+    private func handleErrorResponse(for httpResponse: HTTPURLResponse, data: Data) throws {
+        print("Error: HTTP response returned code \(httpResponse.statusCode)")
+        // Try to decode the response as an error response
+        if
+            let errorResponse = try? Self.jsonDecoder.decode(ACErrorResponse.self, from: data),
+            !errorResponse.errors.isEmpty
+        {
+            if errorResponse.errors.count > 1 {
+                print("There are multiple errors in the response. Throwing the first one.")
+                print("Errors:")
+                errorResponse.errors.forEach { error in
+                    print(error)
+                }
+            }
+            throw errorResponse.errors.first!
+        }
+        let responseBody = String(data: data, encoding: .utf8)
+        print(responseBody ?? "No response body.")
+        // Fallback, if we were unable to decode the error
+        throw Error.invalidStatusCode(statusCode: httpResponse.statusCode, response: responseBody)
     }
 }
